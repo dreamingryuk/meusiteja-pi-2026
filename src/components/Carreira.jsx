@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function BasicStep({ onNext, onBack, data }) {
+function Carreira({ onNext, onBack, data }) {
   const [form, setForm] = useState({
     nome: data.nome || '',
     titulo: data.titulo || '',
@@ -72,4 +72,4 @@ function BasicStep({ onNext, onBack, data }) {
   );
 }
 
-export default BasicStep;
+export default Carreira;

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 
-function PhotoStep({ onNext, onBack, data }) {
+function Foto({ onNext, onBack, data }) {
   const [foto, setFoto] = useState(data.foto || '');
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
@@ -113,4 +113,4 @@ function PhotoStep({ onNext, onBack, data }) {
   );
 }
 
-export default PhotoStep;
+export default Foto;

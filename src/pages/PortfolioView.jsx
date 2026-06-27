@@ -1,4 +1,3 @@
-// src/pages/PortfolioView.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { db, doc, getDoc } from '../config/firebase';

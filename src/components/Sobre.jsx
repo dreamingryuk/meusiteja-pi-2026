@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 
-function AboutStep({ onNext, onBack, data }) {
+function Sobre({ onNext, onBack, data }) {
   const [form, setForm] = useState({
-    sobre: data.sobre || '',
-    missao: data.missao || '',
-    valores: data.valores || ''
+    sobre: data.sobre || ''
   });
 
   const handleSubmit = (e) => {
@@ -29,28 +27,6 @@ function AboutStep({ onNext, onBack, data }) {
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Minha missão</label>
-        <textarea
-          value={form.missao}
-          onChange={(e) => setForm({ ...form, missao: e.target.value })}
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-y"
-          rows="3"
-          placeholder="Qual sua missão?"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Meus valores</label>
-        <textarea
-          value={form.valores}
-          onChange={(e) => setForm({ ...form, valores: e.target.value })}
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-y"
-          rows="3"
-          placeholder="Quais seus valores?"
-        />
-      </div>
-
       <div className="flex gap-3 pt-2">
         <button
           type="button"
@@ -70,4 +46,4 @@ function AboutStep({ onNext, onBack, data }) {
   );
 }
 
-export default AboutStep;
+export default Sobre;

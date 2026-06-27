@@ -1,18 +1,19 @@
-// src/App.jsx
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Hero from './pages/Hero';
-import Gallery from './pages/Gallery';
+import Galeria from './pages/Galeria';
 import Preview from './pages/Preview';
-import Form from './components/FormFlow'; // ou seu formulário
+import Formulario from './pages/Formulario';
+import PortfolioPublico from './pages/PortfolioPublico';
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Hero />} />
-      <Route path="/galeria" element={<Gallery />} />
+      <Route path="/galeria" element={<Galeria />} />
       <Route path="/preview" element={<Preview />} />
-      <Route path="/criar" element={<Form />} />
+      <Route path="/criar" element={<Formulario />} />
+      <Route path="/portfolio/:subdominio" element={<PortfolioPublico />} />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );

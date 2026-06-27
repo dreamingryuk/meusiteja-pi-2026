@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function ContactStep({ onNext, onBack, data }) {
+function Contato({ onNext, onBack, data }) {
   const [form, setForm] = useState({
     email: data.email || '',
     telefone: data.telefone || '',
@@ -83,4 +83,4 @@ function ContactStep({ onNext, onBack, data }) {
   );
 }
 
-export default ContactStep;
+export default Contato;

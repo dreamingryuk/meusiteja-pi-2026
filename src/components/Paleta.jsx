@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function ColorsStep({ onNext, onBack, data }) {
+function Paleta({ onNext, onBack, data }) {
   const [form, setForm] = useState({
     cor_primaria: data.cor_primaria || '#3B82F6',
     cor_secundaria: data.cor_secundaria || '#1E40AF'
@@ -92,4 +92,4 @@ function ColorsStep({ onNext, onBack, data }) {
   );
 }
 
-export default ColorsStep;
+export default Paleta;

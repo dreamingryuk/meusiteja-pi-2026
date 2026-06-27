@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { auth, db, doc, getDoc } from '../config/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 
-function AuthStep({ onNext, data }) {
-  const [email, setEmail] = useState(data.email || '');
-  const [senha, setSenha] = useState(data.senha || '');
+function Login({ onNext, onBack }) {
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState('');
 
@@ -20,14 +20,20 @@ function AuthStep({ onNext, data }) {
       }
       const uid = userCredential.user.uid;
 
-      // Verificar se já existe um site para este usuário
       const siteRef = doc(db, 'sites', uid);
       const siteSnap = await getDoc(siteRef);
+      
       if (siteSnap.exists()) {
-        // Usuário já tem site → redirecionar para preview
-        onNext({ email, senha, uid, existingSite: siteSnap.data() });
+        // Usuário já tem site → redireciona para preview com isNewCreation = false
+        onNext({ 
+          email, 
+          senha, 
+          uid, 
+          existingSite: siteSnap.data(),
+          isNewCreation: false // Importante: não rodar IA novamente
+        });
       } else {
-        // Novo usuário sem site → continuar para o próximo passo
+        // Novo usuário ou sem site → continua o formulário
         onNext({ email, senha, uid, existingSite: null });
       }
     } catch (error) {
@@ -74,11 +80,22 @@ function AuthStep({ onNext, data }) {
         </button>
       </div>
       
-      <button type="submit" className="w-full bg-blue-500 text-white font-medium py-2 rounded-lg hover:bg-blue-600 transition">
-        {isLogin ? 'Entrar' : 'Cadastrar'}
-      </button>
+      <div className="flex gap-3 pt-2">
+        {onBack && (
+          <button
+            type="button"
+            onClick={onBack}
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+          >
+            Voltar
+          </button>
+        )}
+        <button type="submit" className="flex-1 bg-blue-500 text-white font-medium py-2 rounded-lg hover:bg-blue-600 transition">
+          {isLogin ? 'Entrar' : 'Cadastrar'}
+        </button>
+      </div>
     </form>
   );
 }
 
-export default AuthStep;
+export default Login;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function SkillsStep({ onNext, onBack, data }) {
+function Abilidades({ onNext, onBack, data }) {
   const [form, setForm] = useState({
     tecnicas: data.tecnicas || '',
     pessoais: data.pessoais || ''
@@ -59,4 +59,4 @@ function SkillsStep({ onNext, onBack, data }) {
   );
 }
 
-export default SkillsStep;
+export default Abilidades;

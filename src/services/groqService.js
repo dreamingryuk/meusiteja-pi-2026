@@ -1,5 +1,3 @@
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
-
 export async function improveText(text, context) {
   if (!text || text.trim().length < 10) return text;
   
@@ -27,7 +25,11 @@ export async function improveText(text, context) {
       })
     });
     
-    if (!response.ok) throw new Error('Erro na API Groq');
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Erro na API Groq:', errorData);
+      throw new Error(`Erro na API Groq: ${response.status} - ${errorData.error?.message || 'Erro desconhecido'}`);
+    }
     
     const data = await response.json();
     return data.choices[0].message.content.trim();
