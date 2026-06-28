@@ -46,7 +46,7 @@ function SubdomainStep({ onNext, onBack, data }) {
             disabled={loading}
           />
           <span className="px-3 py-2 bg-gray-100 border border-gray-300 border-l-0 rounded-r-lg text-gray-600">
-            .meusite.com
+            .meusiteja.com
           </span>
         </div>
         <p className="text-xs text-gray-500 mt-1">Use apenas letras minúsculas e números, sem espaços.</p>

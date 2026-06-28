@@ -109,7 +109,7 @@ function Galeria() {
                   ))}
                 </div>
                 <div className="mt-3 flex justify-between items-center text-sm text-gray-500">
-                  <span>{portfolio.subdominio || 'meusite'}.meusite.com</span>
+                  <span>{portfolio.subdominio || 'meusite'}.meusiteja.com</span>
                   <span className="text-blue-500">Ver mais →</span>
                 </div>
               </div>

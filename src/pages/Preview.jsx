@@ -1,56 +1,45 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { db, doc, setDoc, deleteDoc } from '../config/firebase';
-import { improveText } from '../services/groqService';
+
+// Função de compressão (idêntica à do componente Foto)
+const compressImage = (file, maxWidth = 800, quality = 0.7) => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth) {
+          height = (maxWidth / width) * height;
+          width = maxWidth;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+};
 
 function Preview() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { data: initialData, uid, isPublicView = false, isNewCreation = false } = location.state || { data: {}, uid: null, isPublicView: false, isNewCreation: false };
+  const { data: initialData, uid, isPublicView = false } = location.state || { data: {}, uid: null, isPublicView: false };
 
   const [editData, setEditData] = useState(initialData);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
-  const [improving, setImproving] = useState(false);
-
-  useEffect(() => {
-    if (!isNewCreation || isPublicView) {
-      setImproving(false);
-      return;
-    }
-
-    const improveAllTexts = async () => {
-      setImproving(true);
-      const improved = { ...editData };
-      
-      const fieldsToImprove = ['descricao', 'sobre'];
-      for (const field of fieldsToImprove) {
-        if (editData[field] && editData[field].length > 10) {
-          const improvedText = await improveText(editData[field], field);
-          improved[field] = improvedText;
-        }
-      }
-      
-      if (editData.experiencias && editData.experiencias.length > 0) {
-        improved.experiencias = await Promise.all(
-          editData.experiencias.map(async (exp) => {
-            if (exp.descricao && exp.descricao.length > 10) {
-              const improvedDesc = await improveText(exp.descricao, 'descrição da experiência');
-              return { ...exp, descricao: improvedDesc };
-            }
-            return exp;
-          })
-        );
-      }
-      
-      setEditData(improved);
-      setImproving(false);
-    };
-    
-    improveAllTexts();
-  }, []);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleChange = (field, value) => {
     setEditData({ ...editData, [field]: value });
@@ -62,6 +51,18 @@ function Preview() {
     setEditData({ ...editData, [type]: updated });
   };
 
+  // Upload de foto com compressão (sem Firebase Storage)
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const compressed = await compressImage(file, 800, 0.7);
+      setEditData({ ...editData, foto: compressed });
+    } catch (error) {
+      alert('Erro ao processar imagem: ' + error.message);
+    }
+  };
+
   const handlePublish = async () => {
     if (!uid) {
       alert('Usuário não autenticado.');
@@ -69,7 +70,7 @@ function Preview() {
     }
     setIsSaving(true);
     try {
-      await setDoc(doc(db, 'sites', uid), editData);
+      await setDoc(doc(db, 'sites', uid), { ...editData, uid });
       setIsPublished(true);
     } catch (error) {
       alert('Erro ao publicar: ' + error.message);
@@ -118,11 +119,6 @@ function Preview() {
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        {!isPublicView && improving && (
-          <div className="bg-blue-50 border border-blue-200 text-blue-700 p-3 rounded-lg mb-4 text-center">
-            ✨ Melhorando seus textos com IA...
-          </div>
-        )}
 
         {showEditButtons && (
           <div className="flex flex-wrap gap-3 justify-end mb-6">
@@ -172,15 +168,62 @@ function Preview() {
         )}
 
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div style={{ backgroundColor: primaryColor }} className="px-6 py-12 md:py-16 flex flex-col md:flex-row items-center gap-6">
-            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-lg overflow-hidden flex-shrink-0">
+          {/* Banner colorido com edição de paleta */}
+          <div style={{ backgroundColor: primaryColor }} className="px-6 py-12 md:py-16 flex flex-col md:flex-row items-center gap-6 relative">
+            {isEditing && (
+              <button
+                className="absolute top-3 right-3 bg-white/20 text-white p-2 rounded-full hover:bg-white/30 transition z-10"
+                onClick={() => setShowColorPicker(!showColorPicker)}
+                title="Editar cores"
+              >
+                🎨
+              </button>
+            )}
+            {showColorPicker && isEditing && (
+              <div className="absolute top-14 right-3 bg-white p-3 rounded-lg shadow-lg flex gap-3 z-20">
+                <div>
+                  <label className="block text-xs text-gray-600">Primária</label>
+                  <input
+                    type="color"
+                    value={primaryColor}
+                    onChange={(e) => setEditData({ ...editData, cor_primaria: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-600">Secundária</label>
+                  <input
+                    type="color"
+                    value={secondaryColor}
+                    onChange={(e) => setEditData({ ...editData, cor_secundaria: e.target.value })}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-lg overflow-hidden flex-shrink-0 relative">
               {editData.foto ? (
                 <img src={editData.foto} alt="Foto" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full bg-gray-300 flex items-center justify-center text-4xl text-gray-500">👤</div>
               )}
+              {isEditing && (
+                <div
+                  className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition cursor-pointer"
+                  onClick={() => fileInputRef.current.click()}
+                >
+                  <span className="text-white text-3xl">📷</span>
+                </div>
+              )}
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handlePhotoUpload}
+              />
             </div>
-            <div className="text-white text-center md:text-left">
+
+            <div className="text-white text-center md:text-left flex-1">
               {isEditing ? (
                 <input
                   type="text"
@@ -203,10 +246,23 @@ function Preview() {
               ) : (
                 <p className="text-lg md:text-xl capitalize">{editData.titulo || 'Seu Título'}</p>
               )}
+              {/* Descrição breve */}
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editData.descricao || ''}
+                  onChange={(e) => handleChange('descricao', e.target.value)}
+                  className="text-md md:text-lg bg-transparent border-b-2 border-white/30 focus:border-white outline-none w-full mt-1"
+                  placeholder="Descrição breve"
+                />
+              ) : (
+                editData.descricao && <p className="text-md md:text-lg text-white/90">{editData.descricao}</p>
+              )}
             </div>
           </div>
 
           <div className="p-6 space-y-6">
+            {/* Sobre */}
             <section className="bg-gray-50 p-4 rounded-xl">
               <h2 className="text-xl font-bold text-gray-800 mb-2" style={{ color: primaryColor }}>Sobre mim</h2>
               {isEditing ? (
@@ -218,7 +274,7 @@ function Preview() {
                   placeholder="Descreva-se..."
                 />
               ) : (
-                <p className="text-gray-700 leading-relaxed capitalize">{editData.sobre || 'Nenhuma descrição fornecida.'}</p>
+                <p className="text-gray-700 leading-relaxed">{editData.sobre || 'Nenhuma descrição fornecida.'}</p>
               )}
             </section>
 
@@ -280,7 +336,7 @@ function Preview() {
                       <div key={idx} className="border-b border-gray-200 pb-2">
                         <p className="font-medium capitalize">{exp.empresa}</p>
                         <p className="capitalize">{exp.cargo}</p>
-                        {exp.descricao && <p className="text-sm text-gray-600 capitalize">{exp.descricao}</p>}
+                        {exp.descricao && <p className="text-sm text-gray-600">{exp.descricao}</p>}
                       </div>
                     ))
                   ) : (
@@ -398,34 +454,10 @@ function Preview() {
               <div className="grid md:grid-cols-2 gap-4 text-gray-700">
                 {isEditing ? (
                   <>
-                    <input
-                      type="email"
-                      value={editData.email || ''}
-                      onChange={(e) => handleChange('email', e.target.value)}
-                      className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                      placeholder="Email"
-                    />
-                    <input
-                      type="tel"
-                      value={editData.telefone || ''}
-                      onChange={(e) => handleChange('telefone', e.target.value)}
-                      className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                      placeholder="Telefone"
-                    />
-                    <input
-                      type="text"
-                      value={editData.instagram || ''}
-                      onChange={(e) => handleChange('instagram', e.target.value)}
-                      className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                      placeholder="Instagram"
-                    />
-                    <input
-                      type="text"
-                      value={editData.linkedin || ''}
-                      onChange={(e) => handleChange('linkedin', e.target.value)}
-                      className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                      placeholder="LinkedIn"
-                    />
+                    <input type="email" value={editData.email || ''} onChange={(e) => handleChange('email', e.target.value)} className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none" placeholder="Email" />
+                    <input type="tel" value={editData.telefone || ''} onChange={(e) => handleChange('telefone', e.target.value)} className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none" placeholder="Telefone" />
+                    <input type="text" value={editData.instagram || ''} onChange={(e) => handleChange('instagram', e.target.value)} className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none" placeholder="Instagram" />
+                    <input type="text" value={editData.linkedin || ''} onChange={(e) => handleChange('linkedin', e.target.value)} className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none" placeholder="LinkedIn" />
                   </>
                 ) : (
                   <>

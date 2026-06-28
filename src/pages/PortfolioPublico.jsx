@@ -75,7 +75,6 @@ function PublicPreviewView({ data }) {
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        {/* Botões de navegação */}
         <div className="flex justify-between items-center mb-6">
           <button
             onClick={() => navigate('/galeria')}
@@ -91,8 +90,8 @@ function PublicPreviewView({ data }) {
           </button>
         </div>
 
-        {/* Template do Portfólio (mesmo layout do Preview) */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          {/* Cabeçalho com foto, nome, título e descrição breve */}
           <div style={{ backgroundColor: primaryColor }} className="px-6 py-12 md:py-16 flex flex-col md:flex-row items-center gap-6">
             <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-lg overflow-hidden flex-shrink-0">
               {data.foto ? (
@@ -104,45 +103,54 @@ function PublicPreviewView({ data }) {
             <div className="text-white text-center md:text-left">
               <h1 className="text-3xl md:text-4xl font-bold capitalize">{data.nome || 'Seu Nome'}</h1>
               <p className="text-lg md:text-xl capitalize">{data.titulo || 'Seu Título'}</p>
+              {data.descricao && <p className="text-md md:text-lg text-white/90">{data.descricao}</p>}
             </div>
           </div>
 
           <div className="p-6 space-y-6">
+            {/* Sobre */}
             <section className="bg-gray-50 p-4 rounded-xl">
               <h2 className="text-xl font-bold text-gray-800 mb-2" style={{ color: primaryColor }}>Sobre mim</h2>
               <p className="text-gray-700 leading-relaxed capitalize">{data.sobre || 'Nenhuma descrição fornecida.'}</p>
             </section>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <section className="bg-gray-50 p-4 rounded-xl">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ color: secondaryColor }}>Missão</h3>
-                <p className="text-gray-700 leading-relaxed capitalize">{data.missao || 'Não informado.'}</p>
-              </section>
-              <section className="bg-gray-50 p-4 rounded-xl">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ color: secondaryColor }}>Valores</h3>
-                <p className="text-gray-700 leading-relaxed capitalize">{data.valores || 'Não informado.'}</p>
-              </section>
-            </div>
+            {/* Experiência (usando array) */}
+            <section className="bg-gray-50 p-4 rounded-xl">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ color: secondaryColor }}>Experiência</h3>
+              <div className="space-y-3">
+                {data.experiencias && data.experiencias.length > 0 ? (
+                  data.experiencias.map((exp, idx) => (
+                    <div key={idx} className="border-b border-gray-200 pb-2">
+                      <p className="font-medium capitalize">{exp.empresa}</p>
+                      <p className="capitalize">{exp.cargo}</p>
+                      {exp.descricao && <p className="text-sm text-gray-600">{exp.descricao}</p>}
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500">Nenhuma experiência adicionada.</p>
+                )}
+              </div>
+            </section>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <section className="bg-gray-50 p-4 rounded-xl">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ color: secondaryColor }}>Experiência</h3>
-                <div className="text-gray-700">
-                  <p className="font-medium capitalize">{data.empresa || 'Empresa'}</p>
-                  <p className="capitalize">{data.cargo || 'Cargo'}</p>
-                  <p className="text-sm text-gray-600 capitalize">{data.descricao_exp || ''}</p>
-                </div>
-              </section>
-              <section className="bg-gray-50 p-4 rounded-xl">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ color: secondaryColor }}>Formação</h3>
-                <div className="text-gray-700">
-                  <p className="font-medium capitalize">{data.instituicao || 'Instituição'}</p>
-                  <p className="capitalize">{data.curso || 'Curso'}</p>
-                  <p className="text-sm text-gray-600">{data.ano || ''}</p>
-                </div>
-              </section>
-            </div>
+            {/* Formação (usando array) */}
+            <section className="bg-gray-50 p-4 rounded-xl">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ color: secondaryColor }}>Formação</h3>
+              <div className="space-y-3">
+                {data.educacoes && data.educacoes.length > 0 ? (
+                  data.educacoes.map((edu, idx) => (
+                    <div key={idx} className="border-b border-gray-200 pb-2">
+                      <p className="font-medium capitalize">{edu.instituicao}</p>
+                      <p className="capitalize">{edu.curso}</p>
+                      {edu.ano && <p className="text-sm text-gray-600">{edu.ano}</p>}
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500">Nenhuma formação adicionada.</p>
+                )}
+              </div>
+            </section>
 
+            {/* Habilidades */}
             <section className="bg-gray-50 p-4 rounded-xl">
               <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ color: secondaryColor }}>Habilidades</h3>
               <div className="flex flex-wrap gap-2">
@@ -155,6 +163,7 @@ function PublicPreviewView({ data }) {
               </div>
             </section>
 
+            {/* Contato */}
             <section className="bg-gray-50 p-4 rounded-xl">
               <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ color: secondaryColor }}>Contato</h3>
               <div className="grid md:grid-cols-2 gap-4 text-gray-700">
@@ -166,7 +175,7 @@ function PublicPreviewView({ data }) {
             </section>
 
             <section className="border-t border-gray-200 pt-4 text-sm text-gray-600">
-              <p>🔗 {data.subdominio || 'meusite'}.meusite.com</p>
+              <p>🔗 {data.subdominio || 'meusite'}.meusiteja.com</p>
             </section>
           </div>
         </div>

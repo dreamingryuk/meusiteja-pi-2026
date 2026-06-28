@@ -10,6 +10,7 @@ import Contato from '../components/Contato';
 import Foto from '../components/Foto';
 import Paleta from '../components/Paleta';
 import Subdominio from '../components/Subdominio';
+import { improveText } from '../services/groqService';
 
 function Formulario() {
   const navigate = useNavigate();
@@ -37,35 +38,56 @@ function Formulario() {
   const currentStepNumber = step + 1;
   const percentage = Math.round((currentStepNumber / totalSteps) * 100);
 
-  const next = (newData) => {
+  const next = async (newData) => {
     const updated = { ...data, ...newData };
     setData(updated);
-    
+
     if (newData.existingSite) {
       setUid(newData.uid);
-      navigate('/preview', { 
-        state: { 
-          data: newData.existingSite, 
+      navigate('/preview', {
+        state: {
+          data: newData.existingSite,
           uid: newData.uid,
           isNewCreation: newData.isNewCreation || false,
           isPublicView: false
-        } 
+        }
       });
       return;
     }
-    
+
     if (newData.uid) {
       setUid(newData.uid);
     }
 
     if (isLast) {
-      navigate('/preview', { 
-        state: { 
-          data: updated, 
+      setLoading(true);
+
+      const improved = { ...updated };
+
+      if (improved.descricao?.length > 10) {
+        improved.descricao = await improveText(improved.descricao, 'descrição profissional');
+      }
+      if (improved.sobre?.length > 10) {
+        improved.sobre = await improveText(improved.sobre, 'apresentação pessoal');
+      }
+      if (improved.experiencias?.length > 0) {
+        improved.experiencias = await Promise.all(
+          improved.experiencias.map(async (exp) => {
+            if (exp.descricao?.length > 10) {
+              return { ...exp, descricao: await improveText(exp.descricao, 'experiência profissional') };
+            }
+            return exp;
+          })
+        );
+      }
+
+      navigate('/preview', {
+        state: {
+          data: improved,
           uid: uid || newData.uid,
           fromLocalStorage: false,
-          isNewCreation: true
-        } 
+          isNewCreation: false
+        }
       });
     } else {
       setStep(step + 1);
@@ -101,7 +123,8 @@ function Formulario() {
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
         <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
-          <p className="mt-4 text-gray-600">Carregando...</p>
+          <p className="mt-4 text-gray-600 font-medium">Gerando seu portfólio...</p>
+          <p className="mt-1 text-gray-400 text-sm">A IA está melhorando seus textos</p>
         </div>
       </div>
     );
@@ -110,7 +133,6 @@ function Formulario() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="bg-gray-50 rounded-2xl shadow-xl p-6 md:p-8 max-w-2xl w-full relative">
-        {/* Botão Voltar ao início */}
         <button
           onClick={goHome}
           className="absolute top-4 left-4 text-gray-500 hover:text-gray-700 transition"
@@ -135,7 +157,7 @@ function Formulario() {
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               className="bg-blue-500 h-2 rounded-full transition-all duration-500"
               style={{ width: `${percentage}%` }}
             />
