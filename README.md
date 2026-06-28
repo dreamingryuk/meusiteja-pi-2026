@@ -236,6 +236,3 @@ Equipe:
 
 Este projeto foi desenvolvido para fins acadêmicos.
 
----
-
-# ⭐ Se este projeto foi útil para você, deixe uma estrela no repositório!
