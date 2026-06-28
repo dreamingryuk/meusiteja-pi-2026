@@ -2,8 +2,7 @@
 
 > Crie e compartilhe seu portfólio profissional em poucos minutos.
 
-O **MeuSiteJá** é uma plataforma web desenvolvida em **React + Firebase** que permite criar um portfólio online de forma prática e intuitiva. O usuário preenche suas informações, escolhe um tema e gera uma página pública para divulgar seu trabalho.
-
+O **MeuSiteJá** é uma plataforma web que permite criar um portfólio online de forma prática, sem necessidade de programação. O usuário preenche suas informações, escolhe um tema e gera uma página pública para divulgar seu trabalho.
 ---
 
 ## 📖 Sobre o Projeto
@@ -16,17 +15,17 @@ Com poucos passos, é possível montar uma página contendo informações pessoa
 
 ## ✨ Funcionalidades
 
-- 👤 Cadastro de informações pessoais
-- 📖 Seção "Sobre Mim"
-- 💼 Experiências profissionais
-- 🎓 Formação acadêmica
-- 🛠️ Lista de habilidades
-- 📞 Contatos e redes sociais
-- 🎨 Escolha de paleta de cores
-- 🖼️ Foto de perfil
-- 🌐 Geração de página pública
-- 🔥 Armazenamento em Firebase
-- 📂 Galeria de portfólios publicados
+- Cadastro de informações pessoais
+- Seção "Sobre Mim"
+- Experiências profissionais
+- Formação acadêmica
+- Lista de habilidades
+- Contatos e redes sociais
+- Escolha de paleta de cores
+- Foto de perfil
+- Geração de página pública
+- Armazenamento no Firebase
+- Galeria de portfólios publicados
 
 ---
 
@@ -34,42 +33,39 @@ Com poucos passos, é possível montar uma página contendo informações pessoa
 
 | Tecnologia | Função |
 |------------|--------|
-| React 19 | Interface da aplicação |
+| React 19 | Interface |
 | Vite | Ambiente de desenvolvimento |
 | React Router DOM | Gerenciamento de rotas |
 | Firebase Firestore | Banco de dados |
-| JavaScript ES6+ | Lógica da aplicação |
-| CSS3 | Estilização |
+| JavaScript | Lógica da aplicação |
+| CSS3 / Tailwind | Estilização |
 
 ---
 
 ## 📁 Estrutura do Projeto
 
 ```
-src
-│
-├── components
-│   ├── Header
-│   ├── Footer
-│   ├── Sobre
-│   ├── Foto
-│   ├── Formação
-│   ├── Experiência
-│   ├── Habilidades
-│   ├── Contato
-│   ├── Paleta
-│   └── ...
-│
-├── pages
-│   ├── Hero
-│   ├── Formulario
-│   ├── PortfolioView
-│   ├── PortfolioPublico
-│   └── Galeria
-│
-├── config
+src/
+├── components/
+│   ├── Abilidades.jsx
+│   ├── Carreira.jsx
+│   ├── Contato.jsx
+│   ├── Experiencia.jsx
+│   ├── Footer.jsx
+│   ├── Formacao.jsx
+│   ├── Foto.jsx
+│   ├── Header.jsx
+│   └── Login.jsx[reference:3]
+├── pages/
+│   ├── Formulario.jsx
+│   ├── Galeria.jsx
+│   ├── Hero.jsx
+│   ├── PortfolioPublico.jsx
+│   └── Preview.jsx[reference:4]
+├── config/
 │   └── firebase.js
-│
+│   └── serviceAccountKey.json
+├── services/
 ├── App.jsx
 └── main.jsx
 ```
@@ -81,19 +77,36 @@ src
 ### Clone o repositório
 
 ```bash
-git clone https://github.com/SEU-USUARIO/meusiteja.git
+git clone https://github.com/dreamingryuk/meusiteja-pi-2026.git
 ```
 
 ### Entre na pasta
 
 ```bash
-cd meusiteja
+cd meusiteja-pi-2026
 ```
 
 ### Instale as dependências
 
 ```bash
 npm install
+```
+
+### Configure as variáveis no ambiente
+
+- Adicione um arquivo '.env' sem aspas na pasta raiz do projeto. Ele deve conter "VITE_GROQ_API_KEY=sua-chave-groq" sem aspas.
+- Adicione um arquivo 'serviceAccountKey.js' sem aspas na pasta 'meusiteja-pi-2025\src\config' com seu Config SDK do seu banco de dados web app do firebase. Ex:
+
+```
+const firebaseConfig = {
+  apiKey: "...",
+  authDomain: "...",
+  projectId: "...",
+  storageBucket: "...",
+  messagingSenderId: "...",
+  appId: "...",
+  measurementId: "..."
+};
 ```
 
 ### Execute o projeto
@@ -114,110 +127,11 @@ http://localhost:5173
 
 | Rota | Descrição |
 |------|-----------|
-| `/` | Página inicial |
+| `/` | Página inicial (Hero) |
 | `/criar` | Cadastro do portfólio |
 | `/preview` | Visualização antes da publicação |
 | `/galeria` | Lista de portfólios públicos |
 | `/portfolio/:subdominio` | Página pública do usuário |
-
----
-
-## 🔥 Configuração do Firebase
-
-Crie um projeto no Firebase e configure o arquivo:
-
-```
-src/config/firebase.js
-```
-
-Exemplo:
-
-```javascript
-import { initializeApp } from "firebase/app";
-
-const firebaseConfig = {
-  apiKey: "...",
-  authDomain: "...",
-  projectId: "...",
-  storageBucket: "...",
-  messagingSenderId: "...",
-  appId: "..."
-};
-
-export const app = initializeApp(firebaseConfig);
-```
-
----
-
-## 💡 Próximas Funcionalidades
-
-- ✅ Login com Google
-- ✅ Upload de imagem para Firebase Storage
-- ✅ Edição de portfólio
-- ✅ Exportação em PDF
-- ✅ Temas personalizados
-- ✅ Responsividade aprimorada
-- ✅ Compartilhamento por QR Code
-
----
-
-## 📸 Demonstração
-
-Adicione aqui algumas imagens do projeto.
-
-```
-docs/
-
-├── home.png
-├── formulario.png
-├── portfolio.png
-└── galeria.png
-```
-
-Depois utilize:
-
-```markdown
-## Página Inicial
-
-![Home](docs/home.png)
-
-## Formulário
-
-![Formulario](docs/formulario.png)
-
-## Portfólio
-
-![Portfolio](docs/portfolio.png)
-```
-
----
-
-## 🤝 Contribuição
-
-Contribuições são bem-vindas!
-
-1. Faça um Fork
-2. Crie uma branch
-
-```bash
-git checkout -b minha-feature
-```
-
-3. Commit
-
-```bash
-git commit -m "Minha nova funcionalidade"
-```
-
-4. Push
-
-```bash
-git push origin minha-feature
-```
-
-5. Abra um Pull Request.
-
----
 
 ## 👨‍💻 Desenvolvedores
 
@@ -226,7 +140,7 @@ Projeto desenvolvido como **Projeto Integrador (PI) 2026**.
 Equipe:
 - Kauan Balestrin
 - Lorenzo Farina
-- Gabriel Pereira
+- Gabriel Silva
 - Breno Farina
 - Miguel Gasperini
 
