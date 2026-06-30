@@ -16,7 +16,7 @@ function Hero() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       <header className="container mx-auto px-6 py-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold text-blue-600">MeuSiteJa</h1>
-        <button 
+        <button
           onClick={handleGallery}
           className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
         >
@@ -31,18 +31,18 @@ function Hero() {
               Crie seu <span className="text-blue-600">portfólio</span> profissional em minutos
             </h2>
             <p className="text-lg text-gray-600 mb-6">
-              O MeuSiteJa é uma plataforma criada por 5 alunos do IFC Campus Concórdia 
+              O MeuSiteJa é uma plataforma criada por 5 alunos do IFC Campus Concórdia
               para ajudar você a ter uma presença online incrível.
             </p>
-            
-            <button 
+
+            <button
               onClick={handleCreateOrEdit}
               className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-lg font-bold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition shadow-md hover:shadow-lg"
             >
               🚀 Criar meu site já
             </button>
           </div>
-          
+
           <div className="flex-1 flex justify-center">
             <div className="bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full">
               <div className="text-center">
@@ -60,9 +60,68 @@ function Hero() {
         </div>
       </main>
 
+<section className="container mx-auto px-6 py-24">
+  <div className="grid md:grid-cols-2 gap-12">
+
+    {/* Sobre nós */}
+    <div className="md:pr-10 md:border-r border-gray-300">
+      <h2 className="text-3xl font-bold text-gray-900 mb-6">
+        Sobre nós
+      </h2>
+
+      <p className="text-gray-600 leading-8">
+        O <span className="font-semibold text-blue-600">MeuSiteJa</span> é um
+        projeto desenvolvido por estudantes do IFC Campus Concórdia com o
+        objetivo de facilitar a criação de portfólios profissionais.
+        Nossa plataforma permite criar um site moderno, responsivo e sem
+        precisar programar.
+      </p>
+    </div>
+
+    {/* Contato */}
+    <div className="md:pl-10">
+      <h2 className="text-3xl font-bold text-gray-900 mb-6">
+        Entre em contato
+      </h2>
+
+      <p className="text-gray-600 mb-8">
+        Tem alguma dúvida ou sugestão? Entre em contato conosco.
+      </p>
+
+      <div className="space-y-6">
+
+        <div className="flex items-center gap-4">
+          <span className="text-3xl">📧</span>
+
+          <div>
+            <h3 className="font-semibold">E-mail</h3>
+            <p className="text-gray-600">
+              contato@meusiteja.com
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <span className="text-3xl">📍</span>
+
+          <div>
+            <h3 className="font-semibold">Localização</h3>
+            <p className="text-gray-600">
+              IFC Campus Concórdia
+              <br />
+              Concórdia - SC
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
       <footer className="container mx-auto px-6 py-8 border-t border-gray-200">
         <p className="text-center text-gray-500 text-sm">
-          © 2024 MeuSiteJa - Criado por alunos do IFC Campus Concórdia
+          © 2026 MeuSiteJa - Criado por alunos do IFC Campus Concórdia
         </p>
       </footer>
     </div>
