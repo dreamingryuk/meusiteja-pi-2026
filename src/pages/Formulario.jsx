@@ -9,13 +9,14 @@ import Abilidades from '../components/Abilidades';
 import Contato from '../components/Contato';
 import Foto from '../components/Foto';
 import Paleta from '../components/Paleta';
+import EscolhaTemplate from '../components/EscolhaTemplate';
 import Subdominio from '../components/Subdominio';
 import { improveText } from '../services/groqService';
 
 function Formulario() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  const [data, setData] = useState({});
+  const [data, setData] = useState({ template: 'tech' });
   const [uid, setUid] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -29,6 +30,7 @@ function Formulario() {
     { id: 'contact', title: 'Contato' },
     { id: 'photo', title: 'Foto profissional' },
     { id: 'colors', title: 'Paleta de cores' },
+    { id: 'template', title: 'Escolha seu template' },
     { id: 'subdomain', title: 'Escolha seu link' }
   ];
 
@@ -39,14 +41,14 @@ function Formulario() {
   const percentage = Math.round((currentStepNumber / totalSteps) * 100);
 
   const next = async (newData) => {
-    const updated = { ...data, ...newData };
+    const updated = { template: 'tech', ...data, ...newData };
     setData(updated);
 
     if (newData.existingSite) {
       setUid(newData.uid);
       navigate('/preview', {
         state: {
-          data: newData.existingSite,
+          data: { template: 'tech', ...newData.existingSite },
           uid: newData.uid,
           isNewCreation: newData.isNewCreation || false,
           isPublicView: false
@@ -113,6 +115,7 @@ function Formulario() {
       case 'contact': return <Contato onNext={next} onBack={back} data={data} />;
       case 'photo': return <Foto onNext={next} onBack={back} data={data} uid={uid} />;
       case 'colors': return <Paleta onNext={next} onBack={back} data={data} />;
+      case 'template': return <EscolhaTemplate onNext={next} onBack={back} data={data} />;
       case 'subdomain': return <Subdominio onNext={next} onBack={back} data={data} />;
       default: return <div>Passo não encontrado</div>;
     }

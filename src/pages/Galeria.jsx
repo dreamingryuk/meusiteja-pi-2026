@@ -8,21 +8,75 @@ function Galeria() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const DEMO_PORTFOLIOS = [
+    {
+      id: 'demo-1',
+      nome: 'Ana Silva',
+      titulo: 'Desenvolvedora Full Stack',
+      subdominio: 'ana-silva',
+      tecnicas: 'React, Node.js, TypeScript',
+      pessoais: 'Trabalho em equipe',
+      sobre: 'Desenvolvedora apaixonada por construir produtos web modernos e acessíveis.',
+      cor_primaria: '#2563EB',
+      cor_secundaria: '#1D4ED8',
+      email: 'ana.silva@exemplo.com'
+    },
+    {
+      id: 'demo-2',
+      nome: 'Lucas Mendes',
+      titulo: 'UI/UX Designer',
+      subdominio: 'lucas-mendes',
+      tecnicas: 'Figma, UI Design, CSS',
+      pessoais: 'Criatividade, Empatia',
+      sobre: 'Criador de experiências digitais intuitivas e atraentes.',
+      cor_primaria: '#7C3AED',
+      cor_secundaria: '#6D28D9',
+      email: 'lucas.mendes@exemplo.com'
+    },
+    {
+      id: 'demo-3',
+      nome: 'Mariana Costa',
+      titulo: 'Engenheira de Dados',
+      subdominio: 'mariana-costa',
+      tecnicas: 'Python, SQL, Analytics',
+      pessoais: 'Pensamento analítico',
+      sobre: 'Transformando dados brutos em insights de negócio.',
+      cor_primaria: '#059669',
+      cor_secundaria: '#047857',
+      email: 'mariana.costa@exemplo.com'
+    }
+  ];
+
   useEffect(() => {
     const fetchPortfolios = async () => {
       setLoading(true);
       setError('');
+      let fbData = [];
       try {
         const querySnapshot = await getDocs(collection(db, 'sites'));
-        const data = [];
         querySnapshot.forEach((doc) => {
-          data.push({ id: doc.id, ...doc.data() });
+          fbData.push({ id: doc.id, ...doc.data() });
         });
-        setPortfolios(data);
-      } catch (error) {
-        console.error('Erro ao buscar portfolios:', error);
-        setError('Erro ao carregar portfolios. Verifique as regras do Firestore.');
+      } catch (err) {
+        console.warn('Firebase getDocs falhou. Exibindo portfólios locais e de demonstração.', err);
       }
+
+      // Buscar locais
+      let localData = [];
+      try {
+        const localListStr = localStorage.getItem('local_sites_list');
+        if (localListStr) {
+          localData = JSON.parse(localListStr);
+        }
+      } catch (e) {}
+
+      // Mesclar combinando IDs únicos
+      const combinedMap = new Map();
+      DEMO_PORTFOLIOS.forEach(item => combinedMap.set(item.subdominio || item.id, item));
+      localData.forEach(item => combinedMap.set(item.subdominio || item.id, item));
+      fbData.forEach(item => combinedMap.set(item.subdominio || item.id, item));
+
+      setPortfolios(Array.from(combinedMap.values()));
       setLoading(false);
     };
 

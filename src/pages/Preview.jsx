@@ -69,12 +69,28 @@ function Preview() {
       return;
     }
     setIsSaving(true);
+    const siteData = { ...editData, uid, updatedAt: new Date().toISOString() };
+    
+    // Tenta salvar no Firebase
     try {
-      await setDoc(doc(db, 'sites', uid), { ...editData, uid });
-      setIsPublished(true);
+      await setDoc(doc(db, 'sites', uid), siteData);
     } catch (error) {
-      alert('Erro ao publicar: ' + error.message);
+      console.warn('Firebase setDoc falhou. Salvando no localStorage em modo de teste.', error);
     }
+
+    // Salva sempre no localStorage para suporte offline/modo de teste
+    try {
+      localStorage.setItem('site_' + uid, JSON.stringify(siteData));
+      const existingListStr = localStorage.getItem('local_sites_list') || '[]';
+      const existingList = JSON.parse(existingListStr);
+      const filtered = existingList.filter(s => s.uid !== uid && s.subdominio !== siteData.subdominio);
+      filtered.push(siteData);
+      localStorage.setItem('local_sites_list', JSON.stringify(filtered));
+    } catch (e) {
+      console.error('Erro ao salvar no localStorage:', e);
+    }
+
+    setIsPublished(true);
     setIsSaving(false);
   };
 
@@ -82,11 +98,20 @@ function Preview() {
     if (!window.confirm('Tem certeza que deseja excluir este site?')) return;
     try {
       await deleteDoc(doc(db, 'sites', uid));
-      alert('Site excluído com sucesso.');
-      navigate('/');
     } catch (error) {
-      alert('Erro ao excluir: ' + error.message);
+      console.warn('Firebase deleteDoc falhou. Deletando do localStorage.', error);
     }
+
+    try {
+      localStorage.removeItem('site_' + uid);
+      const existingListStr = localStorage.getItem('local_sites_list') || '[]';
+      const existingList = JSON.parse(existingListStr);
+      const filtered = existingList.filter(s => s.uid !== uid);
+      localStorage.setItem('local_sites_list', JSON.stringify(filtered));
+    } catch (e) {}
+
+    alert('Site excluído com sucesso.');
+    navigate('/');
   };
 
   if (isPublished) {

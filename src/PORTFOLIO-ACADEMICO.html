@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfólio Acadêmico</title>
+  
+  <style type="text/css">@font-face {font-family:Lora;font-style:normal;font-weight:500;src:url(/cf-fonts/v/lora/5.2.8/cyrillic/wght/normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:500;src:url(/cf-fonts/v/lora/5.2.8/latin/wght/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:500;src:url(/cf-fonts/v/lora/5.2.8/latin-ext/wght/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:500;src:url(/cf-fonts/v/lora/5.2.8/math/wght/normal.woff2);unicode-range:U+0302-0303,U+0305,U+0307-0308,U+0310,U+0312,U+0315,U+031A,U+0326-0327,U+032C,U+032F-0330,U+0332-0333,U+0338,U+033A,U+0346,U+034D,U+0391-03A1,U+03A3-03A9,U+03B1-03C9,U+03D1,U+03D5-03D6,U+03F0-03F1,U+03F4-03F5,U+2016-2017,U+2034-2038,U+203C,U+2040,U+2043,U+2047,U+2050,U+2057,U+205F,U+2070-2071,U+2074-208E,U+2090-209C,U+20D0-20DC,U+20E1,U+20E5-20EF,U+2100-2112,U+2114-2115,U+2117-2121,U+2123-214F,U+2190,U+2192,U+2194-21AE,U+21B0-21E5,U+21F1-21F2,U+21F4-2211,U+2213-2214,U+2216-22FF,U+2308-230B,U+2310,U+2319,U+231C-2321,U+2336-237A,U+237C,U+2395,U+239B-23B7,U+23D0,U+23DC-23E1,U+2474-2475,U+25AF,U+25B3,U+25B7,U+25BD,U+25C1,U+25CA,U+25CC,U+25FB,U+266D-266F,U+27C0-27FF,U+2900-2AFF,U+2B0E-2B11,U+2B30-2B4C,U+2BFE,U+3030,U+FF5B,U+FF5D,U+1D400-1D7FF,U+1EE00-1EEFF;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:500;src:url(/cf-fonts/v/lora/5.2.8/symbols/wght/normal.woff2);unicode-range:U+0001-000C,U+000E-001F,U+007F-009F,U+20DD-20E0,U+20E2-20E4,U+2150-218F,U+2190,U+2192,U+2194-2199,U+21AF,U+21E6-21F0,U+21F3,U+2218-2219,U+2299,U+22C4-22C6,U+2300-243F,U+2440-244A,U+2460-24FF,U+25A0-27BF,U+2800-28FF,U+2921-2922,U+2981,U+29BF,U+29EB,U+2B00-2BFF,U+4DC0-4DFF,U+FFF9-FFFB,U+10140-1018E,U+10190-1019C,U+101A0,U+101D0-101FD,U+102E0-102FB,U+10E60-10E7E,U+1D2C0-1D2D3,U+1D2E0-1D37F,U+1F000-1F0FF,U+1F100-1F1AD,U+1F1E6-1F1FF,U+1F30D-1F30F,U+1F315,U+1F31C,U+1F31E,U+1F320-1F32C,U+1F336,U+1F378,U+1F37D,U+1F382,U+1F393-1F39F,U+1F3A7-1F3A8,U+1F3AC-1F3AF,U+1F3C2,U+1F3C4-1F3C6,U+1F3CA-1F3CE,U+1F3D4-1F3E0,U+1F3ED,U+1F3F1-1F3F3,U+1F3F5-1F3F7,U+1F408,U+1F415,U+1F41F,U+1F426,U+1F43F,U+1F441-1F442,U+1F444,U+1F446-1F449,U+1F44C-1F44E,U+1F453,U+1F46A,U+1F47D,U+1F4A3,U+1F4B0,U+1F4B3,U+1F4B9,U+1F4BB,U+1F4BF,U+1F4C8-1F4CB,U+1F4D6,U+1F4DA,U+1F4DF,U+1F4E3-1F4E6,U+1F4EA-1F4ED,U+1F4F7,U+1F4F9-1F4FB,U+1F4FD-1F4FE,U+1F503,U+1F507-1F50B,U+1F50D,U+1F512-1F513,U+1F53E-1F54A,U+1F54F-1F5FA,U+1F610,U+1F650-1F67F,U+1F687,U+1F68D,U+1F691,U+1F694,U+1F698,U+1F6AD,U+1F6B2,U+1F6B9-1F6BA,U+1F6BC,U+1F6C6-1F6CF,U+1F6D3-1F6D7,U+1F6E0-1F6EA,U+1F6F0-1F6F3,U+1F6F7-1F6FC,U+1F700-1F7FF,U+1F800-1F80B,U+1F810-1F847,U+1F850-1F859,U+1F860-1F887,U+1F890-1F8AD,U+1F8B0-1F8BB,U+1F8C0-1F8C1,U+1F900-1F90B,U+1F93B,U+1F946,U+1F984,U+1F996,U+1F9E9,U+1FA00-1FA6F,U+1FA70-1FA7C,U+1FA80-1FA89,U+1FA8F-1FAC6,U+1FACE-1FADC,U+1FADF-1FAE9,U+1FAF0-1FAF8,U+1FB00-1FBFF;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:500;src:url(/cf-fonts/v/lora/5.2.8/vietnamese/wght/normal.woff2);unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:500;src:url(/cf-fonts/v/lora/5.2.8/cyrillic-ext/wght/normal.woff2);unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:600;src:url(/cf-fonts/v/lora/5.2.8/cyrillic-ext/wght/normal.woff2);unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:600;src:url(/cf-fonts/v/lora/5.2.8/latin/wght/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:600;src:url(/cf-fonts/v/lora/5.2.8/cyrillic/wght/normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:600;src:url(/cf-fonts/v/lora/5.2.8/latin-ext/wght/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:600;src:url(/cf-fonts/v/lora/5.2.8/math/wght/normal.woff2);unicode-range:U+0302-0303,U+0305,U+0307-0308,U+0310,U+0312,U+0315,U+031A,U+0326-0327,U+032C,U+032F-0330,U+0332-0333,U+0338,U+033A,U+0346,U+034D,U+0391-03A1,U+03A3-03A9,U+03B1-03C9,U+03D1,U+03D5-03D6,U+03F0-03F1,U+03F4-03F5,U+2016-2017,U+2034-2038,U+203C,U+2040,U+2043,U+2047,U+2050,U+2057,U+205F,U+2070-2071,U+2074-208E,U+2090-209C,U+20D0-20DC,U+20E1,U+20E5-20EF,U+2100-2112,U+2114-2115,U+2117-2121,U+2123-214F,U+2190,U+2192,U+2194-21AE,U+21B0-21E5,U+21F1-21F2,U+21F4-2211,U+2213-2214,U+2216-22FF,U+2308-230B,U+2310,U+2319,U+231C-2321,U+2336-237A,U+237C,U+2395,U+239B-23B7,U+23D0,U+23DC-23E1,U+2474-2475,U+25AF,U+25B3,U+25B7,U+25BD,U+25C1,U+25CA,U+25CC,U+25FB,U+266D-266F,U+27C0-27FF,U+2900-2AFF,U+2B0E-2B11,U+2B30-2B4C,U+2BFE,U+3030,U+FF5B,U+FF5D,U+1D400-1D7FF,U+1EE00-1EEFF;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:600;src:url(/cf-fonts/v/lora/5.2.8/symbols/wght/normal.woff2);unicode-range:U+0001-000C,U+000E-001F,U+007F-009F,U+20DD-20E0,U+20E2-20E4,U+2150-218F,U+2190,U+2192,U+2194-2199,U+21AF,U+21E6-21F0,U+21F3,U+2218-2219,U+2299,U+22C4-22C6,U+2300-243F,U+2440-244A,U+2460-24FF,U+25A0-27BF,U+2800-28FF,U+2921-2922,U+2981,U+29BF,U+29EB,U+2B00-2BFF,U+4DC0-4DFF,U+FFF9-FFFB,U+10140-1018E,U+10190-1019C,U+101A0,U+101D0-101FD,U+102E0-102FB,U+10E60-10E7E,U+1D2C0-1D2D3,U+1D2E0-1D37F,U+1F000-1F0FF,U+1F100-1F1AD,U+1F1E6-1F1FF,U+1F30D-1F30F,U+1F315,U+1F31C,U+1F31E,U+1F320-1F32C,U+1F336,U+1F378,U+1F37D,U+1F382,U+1F393-1F39F,U+1F3A7-1F3A8,U+1F3AC-1F3AF,U+1F3C2,U+1F3C4-1F3C6,U+1F3CA-1F3CE,U+1F3D4-1F3E0,U+1F3ED,U+1F3F1-1F3F3,U+1F3F5-1F3F7,U+1F408,U+1F415,U+1F41F,U+1F426,U+1F43F,U+1F441-1F442,U+1F444,U+1F446-1F449,U+1F44C-1F44E,U+1F453,U+1F46A,U+1F47D,U+1F4A3,U+1F4B0,U+1F4B3,U+1F4B9,U+1F4BB,U+1F4BF,U+1F4C8-1F4CB,U+1F4D6,U+1F4DA,U+1F4DF,U+1F4E3-1F4E6,U+1F4EA-1F4ED,U+1F4F7,U+1F4F9-1F4FB,U+1F4FD-1F4FE,U+1F503,U+1F507-1F50B,U+1F50D,U+1F512-1F513,U+1F53E-1F54A,U+1F54F-1F5FA,U+1F610,U+1F650-1F67F,U+1F687,U+1F68D,U+1F691,U+1F694,U+1F698,U+1F6AD,U+1F6B2,U+1F6B9-1F6BA,U+1F6BC,U+1F6C6-1F6CF,U+1F6D3-1F6D7,U+1F6E0-1F6EA,U+1F6F0-1F6F3,U+1F6F7-1F6FC,U+1F700-1F7FF,U+1F800-1F80B,U+1F810-1F847,U+1F850-1F859,U+1F860-1F887,U+1F890-1F8AD,U+1F8B0-1F8BB,U+1F8C0-1F8C1,U+1F900-1F90B,U+1F93B,U+1F946,U+1F984,U+1F996,U+1F9E9,U+1FA00-1FA6F,U+1FA70-1FA7C,U+1FA80-1FA89,U+1FA8F-1FAC6,U+1FACE-1FADC,U+1FADF-1FAE9,U+1FAF0-1FAF8,U+1FB00-1FBFF;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:600;src:url(/cf-fonts/v/lora/5.2.8/vietnamese/wght/normal.woff2);unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:700;src:url(/cf-fonts/v/lora/5.2.8/latin/wght/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:700;src:url(/cf-fonts/v/lora/5.2.8/cyrillic/wght/normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:700;src:url(/cf-fonts/v/lora/5.2.8/latin-ext/wght/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:700;src:url(/cf-fonts/v/lora/5.2.8/symbols/wght/normal.woff2);unicode-range:U+0001-000C,U+000E-001F,U+007F-009F,U+20DD-20E0,U+20E2-20E4,U+2150-218F,U+2190,U+2192,U+2194-2199,U+21AF,U+21E6-21F0,U+21F3,U+2218-2219,U+2299,U+22C4-22C6,U+2300-243F,U+2440-244A,U+2460-24FF,U+25A0-27BF,U+2800-28FF,U+2921-2922,U+2981,U+29BF,U+29EB,U+2B00-2BFF,U+4DC0-4DFF,U+FFF9-FFFB,U+10140-1018E,U+10190-1019C,U+101A0,U+101D0-101FD,U+102E0-102FB,U+10E60-10E7E,U+1D2C0-1D2D3,U+1D2E0-1D37F,U+1F000-1F0FF,U+1F100-1F1AD,U+1F1E6-1F1FF,U+1F30D-1F30F,U+1F315,U+1F31C,U+1F31E,U+1F320-1F32C,U+1F336,U+1F378,U+1F37D,U+1F382,U+1F393-1F39F,U+1F3A7-1F3A8,U+1F3AC-1F3AF,U+1F3C2,U+1F3C4-1F3C6,U+1F3CA-1F3CE,U+1F3D4-1F3E0,U+1F3ED,U+1F3F1-1F3F3,U+1F3F5-1F3F7,U+1F408,U+1F415,U+1F41F,U+1F426,U+1F43F,U+1F441-1F442,U+1F444,U+1F446-1F449,U+1F44C-1F44E,U+1F453,U+1F46A,U+1F47D,U+1F4A3,U+1F4B0,U+1F4B3,U+1F4B9,U+1F4BB,U+1F4BF,U+1F4C8-1F4CB,U+1F4D6,U+1F4DA,U+1F4DF,U+1F4E3-1F4E6,U+1F4EA-1F4ED,U+1F4F7,U+1F4F9-1F4FB,U+1F4FD-1F4FE,U+1F503,U+1F507-1F50B,U+1F50D,U+1F512-1F513,U+1F53E-1F54A,U+1F54F-1F5FA,U+1F610,U+1F650-1F67F,U+1F687,U+1F68D,U+1F691,U+1F694,U+1F698,U+1F6AD,U+1F6B2,U+1F6B9-1F6BA,U+1F6BC,U+1F6C6-1F6CF,U+1F6D3-1F6D7,U+1F6E0-1F6EA,U+1F6F0-1F6F3,U+1F6F7-1F6FC,U+1F700-1F7FF,U+1F800-1F80B,U+1F810-1F847,U+1F850-1F859,U+1F860-1F887,U+1F890-1F8AD,U+1F8B0-1F8BB,U+1F8C0-1F8C1,U+1F900-1F90B,U+1F93B,U+1F946,U+1F984,U+1F996,U+1F9E9,U+1FA00-1FA6F,U+1FA70-1FA7C,U+1FA80-1FA89,U+1FA8F-1FAC6,U+1FACE-1FADC,U+1FADF-1FAE9,U+1FAF0-1FAF8,U+1FB00-1FBFF;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:700;src:url(/cf-fonts/v/lora/5.2.8/vietnamese/wght/normal.woff2);unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:700;src:url(/cf-fonts/v/lora/5.2.8/math/wght/normal.woff2);unicode-range:U+0302-0303,U+0305,U+0307-0308,U+0310,U+0312,U+0315,U+031A,U+0326-0327,U+032C,U+032F-0330,U+0332-0333,U+0338,U+033A,U+0346,U+034D,U+0391-03A1,U+03A3-03A9,U+03B1-03C9,U+03D1,U+03D5-03D6,U+03F0-03F1,U+03F4-03F5,U+2016-2017,U+2034-2038,U+203C,U+2040,U+2043,U+2047,U+2050,U+2057,U+205F,U+2070-2071,U+2074-208E,U+2090-209C,U+20D0-20DC,U+20E1,U+20E5-20EF,U+2100-2112,U+2114-2115,U+2117-2121,U+2123-214F,U+2190,U+2192,U+2194-21AE,U+21B0-21E5,U+21F1-21F2,U+21F4-2211,U+2213-2214,U+2216-22FF,U+2308-230B,U+2310,U+2319,U+231C-2321,U+2336-237A,U+237C,U+2395,U+239B-23B7,U+23D0,U+23DC-23E1,U+2474-2475,U+25AF,U+25B3,U+25B7,U+25BD,U+25C1,U+25CA,U+25CC,U+25FB,U+266D-266F,U+27C0-27FF,U+2900-2AFF,U+2B0E-2B11,U+2B30-2B4C,U+2BFE,U+3030,U+FF5B,U+FF5D,U+1D400-1D7FF,U+1EE00-1EEFF;font-display:swap;}@font-face {font-family:Lora;font-style:normal;font-weight:700;src:url(/cf-fonts/v/lora/5.2.8/cyrillic-ext/wght/normal.woff2);unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:300;src:url(/cf-fonts/v/inter/5.2.8/cyrillic/wght/normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:300;src:url(/cf-fonts/v/inter/5.2.8/latin-ext/wght/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:300;src:url(/cf-fonts/v/inter/5.2.8/greek/wght/normal.woff2);unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:300;src:url(/cf-fonts/v/inter/5.2.8/latin/wght/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:300;src:url(/cf-fonts/v/inter/5.2.8/cyrillic-ext/wght/normal.woff2);unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:300;src:url(/cf-fonts/v/inter/5.2.8/vietnamese/wght/normal.woff2);unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:300;src:url(/cf-fonts/v/inter/5.2.8/greek-ext/wght/normal.woff2);unicode-range:U+1F00-1FFF;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:400;src:url(/cf-fonts/v/inter/5.2.8/cyrillic-ext/wght/normal.woff2);unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:400;src:url(/cf-fonts/v/inter/5.2.8/latin/wght/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:400;src:url(/cf-fonts/v/inter/5.2.8/cyrillic/wght/normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:400;src:url(/cf-fonts/v/inter/5.2.8/greek-ext/wght/normal.woff2);unicode-range:U+1F00-1FFF;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:400;src:url(/cf-fonts/v/inter/5.2.8/latin-ext/wght/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:400;src:url(/cf-fonts/v/inter/5.2.8/greek/wght/normal.woff2);unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:400;src:url(/cf-fonts/v/inter/5.2.8/vietnamese/wght/normal.woff2);unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:500;src:url(/cf-fonts/v/inter/5.2.8/greek/wght/normal.woff2);unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:500;src:url(/cf-fonts/v/inter/5.2.8/latin-ext/wght/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:500;src:url(/cf-fonts/v/inter/5.2.8/greek-ext/wght/normal.woff2);unicode-range:U+1F00-1FFF;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:500;src:url(/cf-fonts/v/inter/5.2.8/cyrillic-ext/wght/normal.woff2);unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:500;src:url(/cf-fonts/v/inter/5.2.8/cyrillic/wght/normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:500;src:url(/cf-fonts/v/inter/5.2.8/latin/wght/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:500;src:url(/cf-fonts/v/inter/5.2.8/vietnamese/wght/normal.woff2);unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:600;src:url(/cf-fonts/v/inter/5.2.8/latin-ext/wght/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:600;src:url(/cf-fonts/v/inter/5.2.8/cyrillic/wght/normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:600;src:url(/cf-fonts/v/inter/5.2.8/cyrillic-ext/wght/normal.woff2);unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:600;src:url(/cf-fonts/v/inter/5.2.8/latin/wght/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:600;src:url(/cf-fonts/v/inter/5.2.8/vietnamese/wght/normal.woff2);unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:600;src:url(/cf-fonts/v/inter/5.2.8/greek-ext/wght/normal.woff2);unicode-range:U+1F00-1FFF;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:600;src:url(/cf-fonts/v/inter/5.2.8/greek/wght/normal.woff2);unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:700;src:url(/cf-fonts/v/inter/5.2.8/cyrillic/wght/normal.woff2);unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:700;src:url(/cf-fonts/v/inter/5.2.8/greek/wght/normal.woff2);unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:700;src:url(/cf-fonts/v/inter/5.2.8/greek-ext/wght/normal.woff2);unicode-range:U+1F00-1FFF;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:700;src:url(/cf-fonts/v/inter/5.2.8/latin/wght/normal.woff2);unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:700;src:url(/cf-fonts/v/inter/5.2.8/latin-ext/wght/normal.woff2);unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:700;src:url(/cf-fonts/v/inter/5.2.8/vietnamese/wght/normal.woff2);unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB;font-display:swap;}@font-face {font-family:Inter;font-style:normal;font-weight:700;src:url(/cf-fonts/v/inter/5.2.8/cyrillic-ext/wght/normal.woff2);unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;font-display:swap;}</style>
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+:root {
+  /* ─── Cor Principal ─── */
+  --cor-primaria: #1B2A4A;
+  --cor-primaria-hover: #142038;
+  --cor-primaria-light: #EAEEF5;
+  --cor-primaria-rgb: 27, 42, 74;
+  --cor-primaria-gradient: linear-gradient(135deg, #1B2A4A 0%, #2E4570 100%);
+
+  /* ─── Cor Secundária / Accent ─── */
+  --cor-accent: #A9762F;
+  --cor-accent-light: #F7EFE1;
+  --cor-accent-rgb: 169, 118, 47;
+
+  /* ─── Fundos ─── */
+  --cor-fundo: #FFFFFF;
+  --cor-fundo-alt: #F7F8FA;
+  --cor-fundo-hero: linear-gradient(160deg, #0E1830 0%, #1B2A4A 50%, #0E1830 100%);
+  --cor-fundo-card: #FFFFFF;
+  --cor-fundo-escuro: #0E1830;
+
+  /* ─── Textos ─── */
+  --cor-texto: #1E2430;
+  --cor-texto-light: #5B6472;
+  --cor-texto-claro: #FFFFFF;
+  --cor-texto-muted: #9AA3B0;
+
+  /* ─── Especiais ─── */
+  --cor-whatsapp: #25D366;
+  --cor-whatsapp-hover: #1EBE57;
+  --cor-sucesso: #3E7A56;
+  --cor-barra-fundo: #E4E8EF;
+  --cor-link: #A9762F;
+
+  /* ─── Bordas e Sombras ─── */
+  --cor-borda: #E4E8EF;
+  --cor-borda-light: #EEF1F6;
+  --sombra-sutil: 0 1px 3px rgba(27,42,74,0.05);
+  --sombra-card: 0 4px 22px rgba(27,42,74,0.08);
+  --sombra-card-hover: 0 14px 36px rgba(27,42,74,0.13);
+  --sombra-foto: 0 8px 30px rgba(0,0,0,0.35);
+
+  /* ─── Raios ─── */
+  --raio: 8px;
+  --raio-grande: 12px;
+  --raio-botao: 6px;
+  --raio-pill: 50px;
+  --raio-foto: 8px;
+
+  /* ─── Tipografia ─── */
+  --fonte: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --fonte-titulo: 'Lora', Georgia, serif;
+
+  /* ─── Espaçamentos ─── */
+  --secao-padding: 84px;
+  --max-largura: 860px;
+  --max-largura-larga: 1040px;
+
+  /* ─── Transições ─── */
+  --trans: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ─── Barra de Habilidade ─── */
+  --barra-altura: 8px;
+  --barra-raio: 50px;
+}
+
+/* ─── RESET ─── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  font-family:var(--fonte);color:var(--cor-texto);
+  background:var(--cor-fundo-alt);line-height:1.7;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+a{text-decoration:none;color:inherit}
+ul{list-style:none}
+h1,h2{font-family:var(--fonte-titulo)}
+
+/* ─── NAVBAR ─── */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;transition:var(--trans);border-bottom:1px solid transparent}
+.nav.solid{background:rgba(14,24,48,0.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(169,118,47,0.25)}
+.nav-inner{max-width:var(--max-largura-larga);margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:16px 24px}
+.nav-name{font-family:var(--fonte-titulo);font-size:1.02rem;font-weight:700;color:white;display:flex;align-items:center;gap:8px}
+.nav-name-dot{width:6px;height:6px;border-radius:50%;background:var(--cor-accent)}
+.nav-links{display:flex;align-items:center;gap:4px}
+.nav-link{color:rgba(255,255,255,0.65);font-size:.8rem;font-weight:500;padding:8px 14px;border-radius:var(--raio-botao);transition:var(--trans)}
+.nav-link:hover{color:var(--cor-accent);background:rgba(255,255,255,0.06)}
+.nav-cta{display:flex;align-items:center;gap:6px;background:var(--cor-accent);color:#1E1808;padding:9px 20px;border-radius:var(--raio-botao);font-weight:700;font-size:.8rem;transition:var(--trans);border:none;cursor:pointer}
+.nav-cta:hover{background:#95661F;transform:scale(1.03)}
+
+/* ─── HERO ─── */
+.hero{background:var(--cor-fundo-hero);padding:130px 24px 80px;text-align:center;color:var(--cor-texto-claro);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 10%, rgba(169,118,47,0.14) 0%, transparent 55%)}
+.hero-inner{position:relative;z-index:1;max-width:var(--max-largura);margin:0 auto}
+
+.hero-foto-wrap{width:156px;height:156px;border-radius:var(--raio-foto);margin:0 auto 28px;position:relative}
+.hero-foto-ring{position:absolute;inset:-5px;border-radius:var(--raio-foto);background:linear-gradient(135deg,#A9762F,#1B2A4A);padding:3px}
+.hero-foto-ring-inner{width:100%;height:100%;border-radius:var(--raio-foto);background:var(--cor-fundo-escuro)}
+.hero-foto{width:156px;height:156px;border-radius:var(--raio-foto);overflow:hidden;position:relative;z-index:1;box-shadow:var(--sombra-foto);background:rgba(169,118,47,0.15)}
+.hero-foto img{width:100%;height:100%;object-fit:cover}
+.hero-foto-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--cor-accent);gap:6px}
+.hero-foto-placeholder-icon{font-size:3.2rem}
+.hero-foto-placeholder-text{font-size:.62rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--cor-texto-muted)}
+
+.hero-status{display:inline-flex;align-items:center;gap:8px;background:rgba(169,118,47,0.16);border:1px solid rgba(169,118,47,0.35);padding:6px 16px;border-radius:var(--raio-pill);font-size:.7rem;font-weight:700;color:#D9B76E;text-transform:uppercase;letter-spacing:1.8px;margin-bottom:22px}
+.hero-status-dot{width:6px;height:6px;background:#D9B76E;border-radius:50%}
+
+.hero-nome{font-size:2.7rem;font-weight:700;line-height:1.2;margin-bottom:12px}
+.hero-profissao{font-size:1.05rem;font-weight:500;color:#D9B76E;letter-spacing:.5px;margin-bottom:16px}
+.hero-objetivo{font-size:1rem;color:rgba(255,255,255,0.62);max-width:500px;margin:0 auto 34px;line-height:1.85;font-weight:300}
+
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--cor-accent);color:#1E1808;padding:15px 32px;border-radius:var(--raio-botao);font-size:.88rem;font-weight:700;border:none;cursor:pointer;transition:var(--trans)}
+.btn-primary:hover{background:#95661F;transform:translateY(-2px)}
+.btn-wpp{display:inline-flex;align-items:center;gap:8px;background:var(--cor-whatsapp);color:white;padding:15px 32px;border-radius:var(--raio-botao);font-size:.88rem;font-weight:700;border:none;cursor:pointer;transition:var(--trans)}
+.btn-wpp:hover{background:var(--cor-whatsapp-hover);transform:translateY(-2px)}
+.btn-outline-light{display:inline-flex;align-items:center;gap:8px;background:transparent;color:white;padding:15px 32px;border-radius:var(--raio-botao);font-size:.88rem;font-weight:700;border:1px solid rgba(255,255,255,0.3);cursor:pointer;transition:var(--trans)}
+.btn-outline-light:hover{border-color:var(--cor-accent);color:#D9B76E}
+.btn-download{display:inline-flex;align-items:center;gap:8px;background:var(--cor-fundo-card);color:var(--cor-texto);padding:15px 32px;border-radius:var(--raio-botao);font-size:.88rem;font-weight:700;border:1px solid var(--cor-borda);cursor:pointer;transition:var(--trans)}
+.btn-download:hover{border-color:var(--cor-accent);color:var(--cor-accent)}
+
+.hero-info-bar{display:flex;justify-content:center;gap:44px;margin-top:42px;padding-top:28px;border-top:1px solid rgba(255,255,255,0.1)}
+.hero-info-item{text-align:center}
+.hero-info-valor{font-family:var(--fonte-titulo);font-size:1.5rem;font-weight:700;color:#D9B76E;line-height:1}
+.hero-info-label{font-size:.68rem;color:rgba(255,255,255,0.42);text-transform:uppercase;letter-spacing:1.2px;margin-top:6px}
+
+/* ─── CONTAINER ─── */
+.main-container{max-width:var(--max-largura);margin:0 auto;padding:0 24px;position:relative}
+
+/* ─── SEÇÕES ─── */
+.secao{padding:var(--secao-padding) 0}
+.secao-titulo{margin-bottom:36px}
+.secao-titulo-label{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;color:var(--cor-accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;background:var(--cor-accent-light);padding:5px 14px;border-radius:var(--raio-pill)}
+.secao-titulo h2{font-size:1.75rem;font-weight:700;color:var(--cor-primaria);line-height:1.25}
+.secao-titulo p{font-size:.9rem;color:var(--cor-texto-light);margin-top:6px}
+.secao-divider{width:100%;height:1px;background:var(--cor-borda)}
+
+/* ─── SOBRE ─── */
+.sobre-card{background:var(--cor-fundo-card);border-radius:var(--raio-grande);padding:36px;box-shadow:var(--sombra-card);border:1px solid var(--cor-borda-light)}
+.sobre-texto{font-size:.95rem;color:var(--cor-texto-light);line-height:1.9;margin-bottom:26px}
+.sobre-destaques{display:flex;flex-wrap:wrap;gap:10px}
+.sobre-destaque{display:inline-flex;align-items:center;gap:8px;background:var(--cor-fundo-alt);border:1px solid var(--cor-borda);padding:9px 16px;border-radius:var(--raio-botao);font-size:.8rem;font-weight:600;color:var(--cor-texto)}
+.sobre-destaque:hover{border-color:var(--cor-accent);color:var(--cor-accent)}
+.sobre-destaque-icon{font-size:1rem}
+
+/* ─── PUBLICAÇÕES ─── */
+.publicacoes-lista{display:flex;flex-direction:column;gap:14px}
+.publicacao-card{display:flex;gap:18px;background:var(--cor-fundo-card);border-radius:var(--raio);padding:22px 26px;box-shadow:var(--sombra-sutil);border:1px solid var(--cor-borda-light);border-left:3px solid var(--cor-accent);transition:var(--trans)}
+.publicacao-card:hover{box-shadow:var(--sombra-card)}
+.publicacao-ano{font-family:var(--fonte-titulo);font-size:1.3rem;font-weight:700;color:var(--cor-accent);flex-shrink:0;width:56px}
+.publicacao-corpo{flex:1}
+.publicacao-titulo{font-size:.98rem;font-weight:700;color:var(--cor-primaria);line-height:1.5;margin-bottom:6px}
+.publicacao-veiculo{font-size:.82rem;color:var(--cor-texto-light);font-style:italic;margin-bottom:8px}
+.publicacao-link{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;color:var(--cor-accent)}
+.publicacao-link:hover{text-decoration:underline}
+
+/* ─── EXPERIÊNCIA ─── */
+.timeline{position:relative;padding-left:32px}
+.timeline::before{content:'';position:absolute;left:7px;top:8px;bottom:8px;width:2px;background:var(--cor-borda)}
+.timeline-item{position:relative;margin-bottom:28px}
+.timeline-item:last-child{margin-bottom:0}
+.timeline-dot{position:absolute;left:-32px;top:6px;width:16px;height:16px;border-radius:50%;background:var(--cor-accent-light);border:3px solid var(--cor-accent);z-index:1;transition:var(--trans)}
+.timeline-item:hover .timeline-dot{background:var(--cor-accent)}
+.timeline-card{background:var(--cor-fundo-card);border-radius:var(--raio);padding:24px 28px;box-shadow:var(--sombra-sutil);border:1px solid var(--cor-borda-light);transition:var(--trans)}
+.timeline-card:hover{box-shadow:var(--sombra-card);transform:translateX(4px)}
+.timeline-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:8px;flex-wrap:wrap}
+.timeline-cargo{font-family:var(--fonte-titulo);font-size:1.02rem;font-weight:700;color:var(--cor-primaria)}
+.timeline-periodo{font-size:.74rem;font-weight:700;color:var(--cor-accent);background:var(--cor-accent-light);padding:4px 12px;border-radius:var(--raio-pill);white-space:nowrap}
+.timeline-empresa{font-size:.87rem;font-weight:600;color:var(--cor-texto-light);display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.timeline-empresa-icon{font-size:1rem}
+.timeline-desc{font-size:.85rem;color:var(--cor-texto-light);line-height:1.75}
+.timeline-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.timeline-tag{font-size:.7rem;font-weight:600;background:var(--cor-fundo-alt);color:var(--cor-texto-muted);padding:4px 10px;border-radius:var(--raio-pill);border:1px solid var(--cor-borda)}
+
+/* ─── FORMAÇÃO ─── */
+.formacao-grid{display:flex;flex-direction:column;gap:16px}
+.formacao-card{display:flex;align-items:center;gap:20px;background:var(--cor-fundo-card);border-radius:var(--raio);padding:24px;box-shadow:var(--sombra-sutil);border:1px solid var(--cor-borda-light);transition:var(--trans)}
+.formacao-card:hover{box-shadow:var(--sombra-card)}
+.formacao-icone{width:56px;height:56px;border-radius:12px;background:var(--cor-accent-light);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0}
+.formacao-info{flex:1}
+.formacao-curso{font-family:var(--fonte-titulo);font-size:1rem;font-weight:700;color:var(--cor-primaria);margin-bottom:2px}
+.formacao-instituicao{font-size:.85rem;color:var(--cor-texto-light);display:flex;align-items:center;gap:4px}
+.formacao-ano{font-size:.74rem;font-weight:700;color:var(--cor-accent);background:var(--cor-accent-light);padding:4px 12px;border-radius:var(--raio-pill);white-space:nowrap;flex-shrink:0}
+
+/* ─── HABILIDADES ─── */
+.hab-modos{display:flex;gap:8px;margin-bottom:24px}
+.hab-modo-btn{padding:8px 18px;border-radius:var(--raio-pill);font-size:.8rem;font-weight:700;border:2px solid var(--cor-borda);background:transparent;color:var(--cor-texto-light);cursor:pointer;transition:var(--trans)}
+.hab-modo-btn.active{background:var(--cor-primaria);color:white;border-color:var(--cor-primaria)}
+.hab-modo-btn:hover:not(.active){border-color:var(--cor-accent);color:var(--cor-accent)}
+.hab-barras{display:flex;flex-direction:column;gap:18px}
+.hab-barra-item{background:var(--cor-fundo-card);border-radius:var(--raio);padding:18px 22px;box-shadow:var(--sombra-sutil);border:1px solid var(--cor-borda-light)}
+.hab-barra-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.hab-barra-nome{font-size:.9rem;font-weight:700;color:var(--cor-texto)}
+.hab-barra-pct{font-size:.8rem;font-weight:800;color:var(--cor-accent)}
+.hab-barra-track{width:100%;height:var(--barra-altura);background:var(--cor-barra-fundo);border-radius:var(--barra-raio);overflow:hidden}
+.hab-barra-fill{height:100%;border-radius:var(--barra-raio);background:linear-gradient(135deg,#A9762F,#1B2A4A);transition:width 1.2s cubic-bezier(0.4,0,0.2,1)}
+.hab-tags{display:flex;flex-wrap:wrap;gap:10px}
+.hab-tag{display:inline-flex;align-items:center;gap:8px;background:var(--cor-fundo-card);border:2px solid var(--cor-borda);padding:12px 20px;border-radius:var(--raio-pill);font-size:.85rem;font-weight:700;color:var(--cor-texto);cursor:default}
+.hab-tag:hover{border-color:var(--cor-accent);color:var(--cor-accent)}
+.hab-tag-icon{font-size:1.1rem}
+.hab-tag-nivel{font-size:.65rem;font-weight:800;background:var(--cor-accent-light);color:var(--cor-accent);padding:3px 8px;border-radius:var(--raio-pill)}
+
+/* ─── CONTATO ─── */
+.contato-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.contato-card{display:flex;align-items:center;gap:16px;background:var(--cor-fundo-card);border-radius:var(--raio);padding:22px;box-shadow:var(--sombra-sutil);border:1px solid var(--cor-borda-light);transition:var(--trans)}
+.contato-card:hover{box-shadow:var(--sombra-card)}
+.contato-card-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.contato-card-icon.wpp{background:rgba(37,211,102,0.12)}
+.contato-card-icon.tel{background:var(--cor-primaria-light)}
+.contato-card-icon.email{background:var(--cor-accent-light)}
+.contato-card-icon.local{background:#EFE9DC}
+.contato-label{font-size:.7rem;color:var(--cor-texto-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.contato-valor{font-size:.9rem;font-weight:700;color:var(--cor-texto)}
+.contato-btns{display:flex;gap:12px;flex-wrap:wrap}
+
+/* ─── FOOTER ─── */
+.footer{background:var(--cor-fundo-escuro);color:rgba(255,255,255,0.55);text-align:center;padding:44px 24px 32px;font-size:.8rem}
+.footer a{color:#D9B76E;font-weight:700}
+.footer-social{display:flex;justify-content:center;gap:14px;margin-bottom:18px}
+.footer-social a{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;font-size:1rem;transition:var(--trans)}
+.footer-social a:hover{background:var(--cor-accent);color:#1E1808}
+
+/* ─── WHATSAPP FLUTUANTE ─── */
+.wpp-float{position:fixed;bottom:24px;right:24px;z-index:900;display:flex;align-items:center;gap:10px}
+.wpp-float-msg{background:white;color:var(--cor-texto);padding:10px 16px;border-radius:var(--raio-pill);font-size:.78rem;font-weight:700;box-shadow:var(--sombra-card);white-space:nowrap;animation:float-in .4s ease}
+@keyframes float-in{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+.wpp-float-btn{width:56px;height:56px;border-radius:50%;background:var(--cor-whatsapp);display:flex;align-items:center;justify-content:center;font-size:1.6rem;box-shadow:0 6px 20px rgba(37,211,102,0.4);transition:var(--trans);flex-shrink:0}
+.wpp-float-btn:hover{background:var(--cor-whatsapp-hover);transform:scale(1.08)}
+
+/* ─── RESPONSIVO ─── */
+@media (max-width:640px){
+  .hero-nome{font-size:2.1rem}
+  .contato-grid{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .hero-info-bar{gap:26px}
+  .secao{padding:56px 0}
+  .publicacao-card{flex-direction:column;gap:6px}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+
+/* ╔════════════════════════════════════════════════════════════════╗ */
+/* ║  📝 CONFIGURAÇÃO — ALTERE TODAS AS INFORMAÇÕES AQUI           ║ */
+/* ╚════════════════════════════════════════════════════════════════╝ */
+
+const CONFIG = {
+
+  // ─── DADOS PESSOAIS ───
+  pessoal: {
+    nome: "Dr. Fernando Vasconcelos",
+    profissao: "Professor & Pesquisador em Ciência de Dados",
+    objetivo: "Dedico minha carreira à pesquisa em aprendizado de máquina aplicado à saúde pública e à formação de novos pesquisadores.",
+    status: "Disponível para colaborações",
+    foto: null,
+    whatsapp: "5511999999999",
+    whatsappMensagem: "Olá! Vi seu portfólio acadêmico e gostaria de conversar sobre uma colaboração.",
+    telefone: "(11) 99999-9999",
+    email: "fernando.vasconcelos@universidade.edu.br",
+    cidade: "São Paulo, SP",
+    linkedin: "",
+    github: "",
+    instagram: "",
+    curriculoPDF: null,
+  },
+
+  // ─── MINI STATS DO HERO ───
+  heroStats: [
+    { valor: "45+", label: "Artigos Publicados" },
+    { valor: "12", label: "Anos de Docência" },
+    { valor: "320", label: "Citações" },
+  ],
+
+  // ─── SOBRE MIM ───
+  sobre: {
+    texto: "Sou professor universitário e pesquisador com mais de 12 anos de experiência em ciência de dados aplicada à saúde pública. Coordeno um grupo de pesquisa focado em modelos preditivos para epidemiologia e já orientei mais de 20 alunos de mestrado e doutorado. Também atuo como revisor em periódicos internacionais da área.",
+    destaques: [
+      { icone: "🔬", texto: "Pesquisa Aplicada" },
+      { icone: "📖", texto: "Docência" },
+      { icone: "👨‍🎓", texto: "Orientação Acadêmica" },
+      { icone: "📝", texto: "Revisão por Pares" },
+    ],
+  },
+
+  // ─── PUBLICAÇÕES ───
+  publicacoes: [
+    {
+      ano: "2024",
+      titulo: "Modelos preditivos de aprendizado de máquina para surtos epidemiológicos em grandes centros urbanos",
+      veiculo: "Journal of Public Health Informatics",
+      link: "",
+    },
+    {
+      ano: "2022",
+      titulo: "Uso de redes neurais na previsão de demanda hospitalar durante crises sanitárias",
+      veiculo: "Revista Brasileira de Epidemiologia",
+      link: "",
+    },
+    {
+      ano: "2020",
+      titulo: "Ética e viés algorítmico em sistemas de apoio à decisão clínica",
+      veiculo: "International Conference on Health Informatics",
+      link: "",
+    },
+  ],
+
+  // ─── EXPERIÊNCIA PROFISSIONAL ───
+  experiencias: [
+    {
+      cargo: "Professor Associado",
+      empresa: "Universidade Federal de São Paulo",
+      periodo: "Mar 2016 – Atual",
+      descricao: "Docência em graduação e pós-graduação nas áreas de ciência de dados e bioestatística, coordenação de grupo de pesquisa e orientação de mestrandos e doutorandos.",
+      tags: ["Docência", "Pesquisa", "Orientação"],
+    },
+    {
+      cargo: "Pesquisador Visitante",
+      empresa: "Imperial College London",
+      periodo: "Ago 2019 – Jul 2020",
+      descricao: "Pesquisa em modelagem epidemiológica computacional em colaboração com o departamento de saúde pública.",
+      tags: ["Pesquisa Internacional", "Epidemiologia"],
+    },
+  ],
+
+  // ─── FORMAÇÃO ───
+  formacao: [
+    {
+      curso: "Doutorado em Ciência da Computação",
+      tipo: "Doutorado",
+      instituicao: "Universidade de São Paulo — USP",
+      ano: "2012 – 2016",
+      icone: "🎓",
+    },
+    {
+      curso: "Mestrado em Bioestatística",
+      tipo: "Mestrado",
+      instituicao: "Universidade Estadual de Campinas — UNICAMP",
+      ano: "2009 – 2011",
+      icone: "📘",
+    },
+  ],
+
+  // ─── HABILIDADES ───
+  habilidades: [
+    { nome: "Modelagem Estatística", icone: "📊", nivel: 96, nivelTexto: "Especialista" },
+    { nome: "Machine Learning", icone: "🤖", nivel: 92, nivelTexto: "Avançado" },
+    { nome: "Python / R", icone: "💻", nivel: 90, nivelTexto: "Avançado" },
+    { nome: "Redação Científica", icone: "✍️", nivel: 94, nivelTexto: "Especialista" },
+    { nome: "Docência", icone: "📖", nivel: 95, nivelTexto: "Especialista" },
+  ],
+
+  habilidadesModoInicial: "barras",
+};
+
+
+/* ╔══════════════════════════════════════════════════════════════╗ */
+/* ║  🧩 COMPONENTES — NÃO PRECISA ALTERAR ABAIXO               ║ */
+/* ╚══════════════════════════════════════════════════════════════╝ */
+
+function getWppLink() {
+  return `https://wa.me/${CONFIG.pessoal.whatsapp}?text=${encodeURIComponent(CONFIG.pessoal.whatsappMensagem)}`;
+}
+
+// ─── NAVBAR ───
+function Navbar() {
+  const [solid, setSolid] = React.useState(false);
+  React.useEffect(() => {
+    const fn = () => setSolid(window.scrollY > 80);
+    window.addEventListener('scroll', fn);
+    return () => window.removeEventListener('scroll', fn);
+  }, []);
+
+  return (
+    <nav className={`nav ${solid ? 'solid' : ''}`}>
+      <div className="nav-inner">
+        <div className="nav-name">
+          <span className="nav-name-dot"></span>
+          {CONFIG.pessoal.nome.split(' ').slice(-2).join(' ')}
+        </div>
+        <div className="nav-links">
+          <a href="#sobre" className="nav-link">Sobre</a>
+          <a href="#publicacoes" className="nav-link">Publicações</a>
+          <a href="#experiencia" className="nav-link">Experiência</a>
+          <a href="#habilidades" className="nav-link">Competências</a>
+          <a href="#contato" className="nav-link">Contato</a>
+        </div>
+        <a href="#contato" className="nav-cta">Contato</a>
+      </div>
+    </nav>
+  );
+}
+
+// ─── HERO ───
+function Hero() {
+  const p = CONFIG.pessoal;
+  const stats = CONFIG.heroStats;
+
+  return (
+    <section className="hero" id="inicio">
+      <div className="hero-inner">
+        <div className="hero-foto-wrap">
+          <div className="hero-foto-ring"><div className="hero-foto-ring-inner"></div></div>
+          <div className="hero-foto">
+            {p.foto ? (
+              <img src={p.foto} alt={p.nome} />
+            ) : (
+              <div className="hero-foto-placeholder">
+                <span className="hero-foto-placeholder-icon">🎓</span>
+                <span className="hero-foto-placeholder-text">Sua foto</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="hero-status">
+          <span className="hero-status-dot"></span>
+          {p.status}
+        </div>
+
+        <h1 className="hero-nome">{p.nome}</h1>
+        <p className="hero-profissao">{p.profissao}</p>
+        <p className="hero-objetivo">{p.objetivo}</p>
+
+        <div className="hero-btns">
+          <a href={getWppLink()} target="_blank" rel="noopener noreferrer" className="btn-wpp">
+            <span>📲</span> WhatsApp
+          </a>
+          <a href="#publicacoes" className="btn-primary">
+            Ver Publicações
+          </a>
+          {p.curriculoPDF && (
+            <a href={p.curriculoPDF} download className="btn-outline-light">
+              Baixar Lattes / CV
+            </a>
+          )}
+        </div>
+
+        {stats && stats.length > 0 && (
+          <div className="hero-info-bar">
+            {stats.map((s, i) => (
+              <div className="hero-info-item" key={i}>
+                <div className="hero-info-valor">{s.valor}</div>
+                <div className="hero-info-label">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ─── SOBRE ───
+function Sobre() {
+  const s = CONFIG.sobre;
+  return (
+    <section className="secao" id="sobre">
+      <div className="main-container">
+        <div className="secao-titulo">
+          <span className="secao-titulo-label">Perfil</span>
+          <h2>Sobre Mim</h2>
+        </div>
+        <div className="sobre-card">
+          <p className="sobre-texto">{s.texto}</p>
+          <div className="sobre-destaques">
+            {s.destaques.map((d, i) => (
+              <span className="sobre-destaque" key={i}>
+                <span className="sobre-destaque-icon">{d.icone}</span>
+                {d.texto}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="secao-divider" style={{marginTop:'var(--secao-padding)'}}></div>
+      </div>
+    </section>
+  );
+}
+
+// ─── PUBLICAÇÕES ───
+function Publicacoes() {
+  const lista = CONFIG.publicacoes;
+  if (!lista || lista.length === 0) return null;
+
+  return (
+    <section className="secao" id="publicacoes" style={{paddingTop:0}}>
+      <div className="main-container">
+        <div className="secao-titulo">
+          <span className="secao-titulo-label">Produção Científica</span>
+          <h2>Publicações</h2>
+          <p>Artigos e trabalhos publicados</p>
+        </div>
+        <div className="publicacoes-lista">
+          {lista.map((pub, i) => (
+            <div className="publicacao-card" key={i}>
+              <div className="publicacao-ano">{pub.ano}</div>
+              <div className="publicacao-corpo">
+                <div className="publicacao-titulo">{pub.titulo}</div>
+                <div className="publicacao-veiculo">{pub.veiculo}</div>
+                {pub.link && (
+                  <a href={pub.link} target="_blank" rel="noopener noreferrer" className="publicacao-link">
+                    Ler publicação →
+                  </a>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="secao-divider" style={{marginTop:'var(--secao-padding)'}}></div>
+      </div>
+    </section>
+  );
+}
+
+// ─── EXPERIÊNCIA ───
+function Experiencia() {
+  const exps = CONFIG.experiencias;
+  if (!exps || exps.length === 0) return null;
+
+  return (
+    <section className="secao" id="experiencia" style={{paddingTop:0}}>
+      <div className="main-container">
+        <div className="secao-titulo">
+          <span className="secao-titulo-label">Carreira</span>
+          <h2>Experiência Profissional</h2>
+          <p>Minha trajetória acadêmica e profissional</p>
+        </div>
+        <div className="timeline">
+          {exps.map((exp, i) => (
+            <div className="timeline-item" key={i}>
+              <div className="timeline-dot"></div>
+              <div className="timeline-card">
+                <div className="timeline-header">
+                  <span className="timeline-cargo">{exp.cargo}</span>
+                  <span className="timeline-periodo">{exp.periodo}</span>
+                </div>
+                <div className="timeline-empresa">
+                  <span className="timeline-empresa-icon">🏛️</span>
+                  {exp.empresa}
+                </div>
+                <p className="timeline-desc">{exp.descricao}</p>
+                {exp.tags && exp.tags.length > 0 && (
+                  <div className="timeline-tags">
+                    {exp.tags.map((tag, j) => (
+                      <span className="timeline-tag" key={j}>{tag}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="secao-divider" style={{marginTop:'var(--secao-padding)'}}></div>
+      </div>
+    </section>
+  );
+}
+
+// ─── FORMAÇÃO ───
+function Formacao() {
+  const lista = CONFIG.formacao;
+  if (!lista || lista.length === 0) return null;
+
+  return (
+    <section className="secao" id="formacao" style={{paddingTop:0}}>
+      <div className="main-container">
+        <div className="secao-titulo">
+          <span className="secao-titulo-label">Educação</span>
+          <h2>Formação Acadêmica</h2>
+          <p>Titulação e trajetória educacional</p>
+        </div>
+        <div className="formacao-grid">
+          {lista.map((f, i) => (
+            <div className="formacao-card" key={i}>
+              <div className="formacao-icone">{f.icone}</div>
+              <div className="formacao-info">
+                <div className="formacao-curso">{f.curso}</div>
+                <div className="formacao-instituicao">
+                  {f.instituicao}
+                  {f.tipo && <span> • {f.tipo}</span>}
+                </div>
+              </div>
+              <span className="formacao-ano">{f.ano}</span>
+            </div>
+          ))}
+        </div>
+        <div className="secao-divider" style={{marginTop:'var(--secao-padding)'}}></div>
+      </div>
+    </section>
+  );
+}
+
+// ─── HABILIDADES ───
+function Habilidades() {
+  const habs = CONFIG.habilidades;
+  const [modo, setModo] = React.useState(CONFIG.habilidadesModoInicial || 'barras');
+  const [animado, setAnimado] = React.useState(false);
+
+  React.useEffect(() => {
+    const obs = new IntersectionObserver(
+      (entries) => { if (entries[0].isIntersecting) setAnimado(true); },
+      { threshold: 0.2 }
+    );
+    const el = document.getElementById('habilidades');
+    if (el) obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  if (!habs || habs.length === 0) return null;
+
+  return (
+    <section className="secao" id="habilidades" style={{paddingTop:0}}>
+      <div className="main-container">
+        <div className="secao-titulo">
+          <span className="secao-titulo-label">Competências</span>
+          <h2>Áreas de Especialização</h2>
+          <p>Principais competências técnicas e acadêmicas</p>
+        </div>
+
+        <div className="hab-modos">
+          <button className={`hab-modo-btn ${modo === 'barras' ? 'active' : ''}`} onClick={() => setModo('barras')}>Barras</button>
+          <button className={`hab-modo-btn ${modo === 'tags' ? 'active' : ''}`} onClick={() => setModo('tags')}>Tags</button>
+        </div>
+
+        {modo === 'barras' ? (
+          <div className="hab-barras">
+            {habs.map((h, i) => (
+              <div className="hab-barra-item" key={i}>
+                <div className="hab-barra-header">
+                  <span className="hab-barra-nome">{h.icone} {h.nome}</span>
+                  <span className="hab-barra-pct">{h.nivel}%</span>
+                </div>
+                <div className="hab-barra-track">
+                  <div className="hab-barra-fill" style={{ width: animado ? `${h.nivel}%` : '0%' }}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="hab-tags">
+            {habs.map((h, i) => (
+              <span className="hab-tag" key={i}>
+                <span className="hab-tag-icon">{h.icone}</span>
+                {h.nome}
+                <span className="hab-tag-nivel">{h.nivelTexto}</span>
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="secao-divider" style={{marginTop:'var(--secao-padding)'}}></div>
+      </div>
+    </section>
+  );
+}
+
+// ─── CONTATO ───
+function Contato() {
+  const p = CONFIG.pessoal;
+
+  return (
+    <section className="secao" id="contato" style={{paddingTop:0}}>
+      <div className="main-container">
+        <div className="secao-titulo">
+          <span className="secao-titulo-label">Contato</span>
+          <h2>Vamos Colaborar</h2>
+          <p>Disponível para parcerias acadêmicas e projetos de pesquisa</p>
+        </div>
+
+        <div className="contato-grid">
+          <div className="contato-card">
+            <div className="contato-card-icon wpp">📱</div>
+            <div>
+              <div className="contato-label">WhatsApp</div>
+              <div className="contato-valor">{p.telefone}</div>
+            </div>
+          </div>
+          <div className="contato-card">
+            <div className="contato-card-icon tel">📞</div>
+            <div>
+              <div className="contato-label">Telefone</div>
+              <div className="contato-valor">{p.telefone}</div>
+            </div>
+          </div>
+          <div className="contato-card">
+            <div className="contato-card-icon email">✉️</div>
+            <div>
+              <div className="contato-label">E-mail</div>
+              <div className="contato-valor" style={{fontSize:'.8rem'}}>{p.email}</div>
+            </div>
+          </div>
+          <div className="contato-card">
+            <div className="contato-card-icon local">📍</div>
+            <div>
+              <div className="contato-label">Localização</div>
+              <div className="contato-valor">{p.cidade}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="contato-btns">
+          <a href={getWppLink()} target="_blank" rel="noopener noreferrer" className="btn-wpp">
+            <span>📲</span> Chamar no WhatsApp
+          </a>
+          <a href={`mailto:${p.email}`} className="btn-primary">
+            Enviar E-mail
+          </a>
+          {p.curriculoPDF && (
+            <a href={p.curriculoPDF} download className="btn-download">
+              Baixar Currículo PDF
+            </a>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── FOOTER ───
+function Footer() {
+  const ano = new Date().getFullYear();
+  const p = CONFIG.pessoal;
+  const redes = [
+    { url: p.linkedin, icone: '💼', label: 'LinkedIn' },
+    { url: p.github, icone: '💻', label: 'GitHub' },
+    { url: p.instagram, icone: '📸', label: 'Instagram' },
+  ];
+  const temRedes = redes.some(r => r.url);
+
+  return (
+    <footer className="footer">
+      {temRedes && (
+        <div className="footer-social">
+          {redes.map((r, i) => {
+            if (!r.url) return null;
+            return (
+              <a key={i} href={r.url} target="_blank" rel="noopener noreferrer" title={r.label}>
+                {r.icone}
+              </a>
+            );
+          })}
+        </div>
+      )}
+      <p>© {ano} <a href="#inicio">{p.nome}</a></p>
+      <p style={{marginTop:'6px',fontSize:'.72rem',opacity:.55}}>
+        {p.profissao}
+      </p>
+    </footer>
+  );
+}
+
+// ─── WPP FLUTUANTE ───
+function WppFloat() {
+  const [show, setShow] = React.useState(false);
+  React.useEffect(() => {
+    const t = setTimeout(() => setShow(true), 2500);
+    return () => clearTimeout(t);
+  }, []);
+  if (!show) return null;
+
+  return (
+    <div className="wpp-float">
+      <div className="wpp-float-msg">Fale comigo!</div>
+      <a href={getWppLink()} target="_blank" rel="noopener noreferrer" className="wpp-float-btn" aria-label="WhatsApp">
+        📱
+      </a>
+    </div>
+  );
+}
+
+// ─── APP ───
+function App() {
+  return (
+    <div>
+      <Navbar />
+      <Hero />
+      <Sobre />
+      <Publicacoes />
+      <Experiencia />
+      <Formacao />
+      <Habilidades />
+      <Contato />
+      <Footer />
+      <WppFloat />
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+
+</script>
+</body>
+</html>
