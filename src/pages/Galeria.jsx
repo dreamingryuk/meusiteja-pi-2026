@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, collection, getDocs } from '../config/firebase';
+import DEMO_PORTFOLIOS from '../data/demoPortfolios';
 
 function Galeria() {
   const navigate = useNavigate();
@@ -8,44 +9,6 @@ function Galeria() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const DEMO_PORTFOLIOS = [
-    {
-      id: 'demo-1',
-      nome: 'Ana Silva',
-      titulo: 'Desenvolvedora Full Stack',
-      subdominio: 'ana-silva',
-      tecnicas: 'React, Node.js, TypeScript',
-      pessoais: 'Trabalho em equipe',
-      sobre: 'Desenvolvedora apaixonada por construir produtos web modernos e acessíveis.',
-      cor_primaria: '#2563EB',
-      cor_secundaria: '#1D4ED8',
-      email: 'ana.silva@exemplo.com'
-    },
-    {
-      id: 'demo-2',
-      nome: 'Lucas Mendes',
-      titulo: 'UI/UX Designer',
-      subdominio: 'lucas-mendes',
-      tecnicas: 'Figma, UI Design, CSS',
-      pessoais: 'Criatividade, Empatia',
-      sobre: 'Criador de experiências digitais intuitivas e atraentes.',
-      cor_primaria: '#7C3AED',
-      cor_secundaria: '#6D28D9',
-      email: 'lucas.mendes@exemplo.com'
-    },
-    {
-      id: 'demo-3',
-      nome: 'Mariana Costa',
-      titulo: 'Engenheira de Dados',
-      subdominio: 'mariana-costa',
-      tecnicas: 'Python, SQL, Analytics',
-      pessoais: 'Pensamento analítico',
-      sobre: 'Transformando dados brutos em insights de negócio.',
-      cor_primaria: '#059669',
-      cor_secundaria: '#047857',
-      email: 'mariana.costa@exemplo.com'
-    }
-  ];
 
   useEffect(() => {
     const fetchPortfolios = async () => {

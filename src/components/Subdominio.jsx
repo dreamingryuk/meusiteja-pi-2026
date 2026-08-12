@@ -22,8 +22,9 @@ function SubdomainStep({ onNext, onBack, data }) {
       }
       onNext(form);
     } catch (error) {
-      console.error('Erro ao verificar subdomínio:', error);
-      alert('Erro ao verificar subdomínio. Tente novamente.');
+      // Se Firebase falhar (ex: sem configuração ou offline), prossegue com o subdomínio informado
+      console.warn('Não foi possível verificar disponibilidade do subdomínio no Firebase. Prosseguindo.', error);
+      onNext(form);
     }
     setLoading(false);
   };
@@ -39,7 +40,7 @@ function SubdomainStep({ onNext, onBack, data }) {
           <input
             type="text"
             value={form.subdominio}
-            onChange={(e) => setForm({ ...form, subdominio: e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '') })}
+            onChange={(e) => setForm({ ...form, subdominio: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
             className="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
             placeholder="meuportfolio"
             required
@@ -49,7 +50,7 @@ function SubdomainStep({ onNext, onBack, data }) {
             .meusiteja.com
           </span>
         </div>
-        <p className="text-xs text-gray-500 mt-1">Use apenas letras minúsculas e números, sem espaços.</p>
+        <p className="text-xs text-gray-500 mt-1">Use letras minúsculas, números e hifens. Ex: joao-silva</p>
       </div>
 
       <div className="flex gap-3 pt-2">
