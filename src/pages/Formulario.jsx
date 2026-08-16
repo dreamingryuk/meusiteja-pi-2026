@@ -16,7 +16,7 @@ import { improveText } from '../services/groqService';
 function Formulario() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  const [data, setData] = useState({ template: 'tech' });
+  const [data, setData] = useState({ template: 'tech', iaFormalizacaoAtiva: true });
   const [uid, setUid] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -41,7 +41,7 @@ function Formulario() {
   const percentage = Math.round((currentStepNumber / totalSteps) * 100);
 
   const next = async (newData) => {
-    const updated = { template: 'tech', ...data, ...newData };
+    const updated = { template: 'tech', iaFormalizacaoAtiva: true, ...data, ...newData };
     setData(updated);
 
     if (newData.existingSite) {
@@ -66,21 +66,25 @@ function Formulario() {
 
       const improved = { ...updated };
 
-      if (improved.descricao?.length > 10) {
-        improved.descricao = await improveText(improved.descricao, 'descrição profissional');
-      }
-      if (improved.sobre?.length > 10) {
-        improved.sobre = await improveText(improved.sobre, 'apresentação pessoal');
-      }
-      if (improved.experiencias?.length > 0) {
-        improved.experiencias = await Promise.all(
-          improved.experiencias.map(async (exp) => {
-            if (exp.descricao?.length > 10) {
-              return { ...exp, descricao: await improveText(exp.descricao, 'experiência profissional') };
-            }
-            return exp;
-          })
-        );
+      // Só chama a IA se o usuário não tiver desativado a formalização
+      // na etapa "Escolha seu template".
+      if (improved.iaFormalizacaoAtiva !== false) {
+        if (improved.descricao?.length > 10) {
+          improved.descricao = await improveText(improved.descricao, 'descrição profissional');
+        }
+        if (improved.sobre?.length > 10) {
+          improved.sobre = await improveText(improved.sobre, 'apresentação pessoal');
+        }
+        if (improved.experiencias?.length > 0) {
+          improved.experiencias = await Promise.all(
+            improved.experiencias.map(async (exp) => {
+              if (exp.descricao?.length > 10) {
+                return { ...exp, descricao: await improveText(exp.descricao, 'experiência profissional') };
+              }
+              return exp;
+            })
+          );
+        }
       }
 
       navigate('/preview', {
@@ -127,7 +131,9 @@ function Formulario() {
         <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
           <p className="mt-4 text-gray-600 font-medium">Gerando seu portfólio...</p>
-          <p className="mt-1 text-gray-400 text-sm">A IA está melhorando seus textos</p>
+          <p className="mt-1 text-gray-400 text-sm">
+            {data.iaFormalizacaoAtiva !== false ? 'A IA está melhorando seus textos' : 'Preparando seu site'}
+          </p>
         </div>
       </div>
     );

@@ -1,7 +1,36 @@
 import React, { useState } from 'react';
+import TemplateRenderer from './templates/TemplateRenderer';
+
+// Dados usados para preencher os campos que o usuário ainda não preencheu,
+// só para a pré-visualização ficar completa e realista.
+const PREVIEW_FALLBACK = {
+  nome: 'Seu Nome Aqui',
+  titulo: 'Seu Título Profissional',
+  descricao: 'Uma frase curta e marcante sobre o que você faz.',
+  sobre: 'Aqui aparece o texto "Sobre mim" que você escreveu, contando sua trajetória e o que te diferencia profissionalmente.',
+  experiencias: [
+    { empresa: 'Nome da Empresa', cargo: 'Seu Cargo', descricao: 'Uma breve descrição do que você fez nessa experiência.' }
+  ],
+  educacoes: [
+    { instituicao: 'Sua Instituição de Ensino', curso: 'Seu Curso', ano: '2024' }
+  ],
+  tecnicas: 'Habilidade 1, Habilidade 2, Habilidade 3',
+  pessoais: 'Comunicação, Organização',
+  email: 'voce@email.com',
+  telefone: '(00) 90000-0000',
+  instagram: '@seuinstagram',
+  linkedin: 'linkedin.com/in/voce',
+  subdominio: 'seu-link'
+};
 
 function EscolhaTemplate({ onNext, onBack, data = {} }) {
   const [selectedTemplate, setSelectedTemplate] = useState(data.template || 'tech');
+  const [previewTemplateId, setPreviewTemplateId] = useState(null);
+
+  // Formalização por IA: ativada por padrão. Só é possível existir como
+  // `false` se o usuário já tiver desativado antes (ex: voltando um passo).
+  const [iaAtiva, setIaAtiva] = useState(data.iaFormalizacaoAtiva !== false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const templates = [
     {
@@ -87,10 +116,58 @@ function EscolhaTemplate({ onNext, onBack, data = {} }) {
     }
   ];
 
+  // Mescla os dados reais que o usuário já preencheu nos passos anteriores
+  // com valores de exemplo nos campos ainda vazios, para a prévia nunca
+  // aparecer "quebrada" ou incompleta.
+  const buildPreviewData = (templateId) => ({
+    ...PREVIEW_FALLBACK,
+    ...data,
+    nome: data.nome || PREVIEW_FALLBACK.nome,
+    titulo: data.titulo || PREVIEW_FALLBACK.titulo,
+    descricao: data.descricao || PREVIEW_FALLBACK.descricao,
+    sobre: data.sobre || PREVIEW_FALLBACK.sobre,
+    experiencias: data.experiencias?.length ? data.experiencias : PREVIEW_FALLBACK.experiencias,
+    educacoes: data.educacoes?.length ? data.educacoes : PREVIEW_FALLBACK.educacoes,
+    tecnicas: data.tecnicas || PREVIEW_FALLBACK.tecnicas,
+    pessoais: data.pessoais || PREVIEW_FALLBACK.pessoais,
+    template: templateId
+  });
+
+  const openPreview = (e, templateId) => {
+    e.stopPropagation();
+    setPreviewTemplateId(templateId);
+  };
+
+  const closePreview = () => setPreviewTemplateId(null);
+
+  const chooseFromPreview = () => {
+    setSelectedTemplate(previewTemplateId);
+    setPreviewTemplateId(null);
+  };
+
+  // Ao tentar DESATIVAR a formalização, exige confirmação via popup.
+  // Reativar (antes de publicar) não precisa de confirmação.
+  const handleToggleIa = (checked) => {
+    if (checked) {
+      setIaAtiva(true);
+    } else {
+      setShowConfirmModal(true);
+    }
+  };
+
+  const confirmDisableIa = () => {
+    setIaAtiva(false);
+    setShowConfirmModal(false);
+  };
+
+  const cancelDisableIa = () => {
+    setShowConfirmModal(false); // checkbox permanece marcada
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (onNext) {
-      onNext({ template: selectedTemplate });
+      onNext({ template: selectedTemplate, iaFormalizacaoAtiva: iaAtiva });
     }
   };
 
@@ -138,8 +215,21 @@ function EscolhaTemplate({ onNext, onBack, data = {} }) {
                 </p>
               </div>
 
+              {/* Botão de pré-visualização */}
+              <button
+                type="button"
+                onClick={(e) => openPreview(e, tmpl.id)}
+                className="mt-3 w-full text-xs font-medium py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition flex items-center justify-center gap-1.5"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Pré-visualizar
+              </button>
+
               {/* Selection indicator */}
-              <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-2 text-xs">
+              <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-2 text-xs">
                 <span className={isSelected ? 'font-bold text-blue-600' : 'text-gray-400'}>
                   {isSelected ? '✓ Selecionado' : 'Clique para selecionar'}
                 </span>
@@ -152,6 +242,31 @@ function EscolhaTemplate({ onNext, onBack, data = {} }) {
             </div>
           );
         })}
+      </div>
+
+      {/* ===== Controle de formalização por IA ===== */}
+      <div className="border border-gray-200 rounded-xl p-4 bg-white">
+        <label className="flex items-start gap-3 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={iaAtiva}
+            onChange={(e) => handleToggleIa(e.target.checked)}
+            className="mt-0.5 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          <span className="text-sm">
+            <span className="font-medium text-gray-800">Formalizar textos automaticamente com IA</span>
+            <span className="block text-gray-500 text-xs mt-0.5">
+              Ativado por padrão. A IA revisa e melhora a descrição, o "sobre mim" e as
+              descrições de experiência antes de publicar seu site.
+            </span>
+          </span>
+        </label>
+        {!iaAtiva && (
+          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mt-3">
+            ⚠ Formalização por IA desativada. Seus textos serão publicados exatamente como
+            você escreveu. Depois de publicado, para usar a IA você precisará criar um novo portfólio.
+          </p>
+        )}
       </div>
 
       <div className="flex gap-3 pt-2">
@@ -171,6 +286,86 @@ function EscolhaTemplate({ onNext, onBack, data = {} }) {
           Continuar
         </button>
       </div>
+
+      {/* ===== Modal de pré-visualização do template ===== */}
+      {previewTemplateId && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={closePreview}>
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 flex-shrink-0">
+              <h3 className="font-bold text-gray-800">
+                Pré-visualização — {templates.find(t => t.id === previewTemplateId)?.nome}
+              </h3>
+              <button
+                type="button"
+                onClick={closePreview}
+                className="text-gray-400 hover:text-gray-700 transition"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="overflow-y-auto flex-1 bg-gray-100">
+              <TemplateRenderer data={buildPreviewData(previewTemplateId)} />
+            </div>
+
+            <div className="flex gap-3 px-5 py-3 border-t border-gray-200 flex-shrink-0">
+              <button
+                type="button"
+                onClick={closePreview}
+                className="px-5 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition"
+              >
+                Fechar
+              </button>
+              <button
+                type="button"
+                onClick={chooseFromPreview}
+                className="flex-1 bg-blue-600 text-white font-medium py-2 rounded-lg hover:bg-blue-700 transition"
+              >
+                Usar este template
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===== Popup de confirmação ao desativar a IA ===== */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={cancelDisableIa}>
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-4xl mb-3">⚠️</div>
+            <h3 className="font-bold text-gray-800 text-lg mb-2">Desativar formalização por IA?</h3>
+            <p className="text-sm text-gray-500 mb-6">
+              Seus textos serão publicados exatamente como você escreveu, sem revisão da IA.
+              Se mudar de ideia depois de publicar o site, será necessário criar um novo
+              portfólio para usar a IA novamente.
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={cancelDisableIa}
+                className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={confirmDisableIa}
+                className="flex-1 px-4 py-2 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 transition"
+              >
+                Desativar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   );
 }

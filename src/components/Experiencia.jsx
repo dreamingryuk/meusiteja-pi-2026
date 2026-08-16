@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AIBadge from './AIBadge';
 
 function Experiencia({ onNext, onBack, data }) {
   const [experiencias, setExperiencias] = useState(data.experiencias || []);
@@ -44,6 +45,7 @@ function Experiencia({ onNext, onBack, data }) {
             className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
             placeholder="Cargo"
           />
+          <AIBadge text="A descrição desta experiência será formalizada automaticamente pela IA" />
           <textarea
             value={current.descricao}
             onChange={(e) => setCurrent({ ...current, descricao: e.target.value })}

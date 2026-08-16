@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AIBadge from './AIBadge';
 
 function Carreira({ onNext, onBack, data }) {
   const [form, setForm] = useState({
@@ -43,6 +44,7 @@ function Carreira({ onNext, onBack, data }) {
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Descrição breve *</label>
+        <AIBadge />
         <textarea
           value={form.descricao}
           onChange={(e) => setForm({ ...form, descricao: e.target.value })}

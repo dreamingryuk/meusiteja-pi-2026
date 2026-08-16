@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import AIBadge from './AIBadge';
 
 function Sobre({ onNext, onBack, data }) {
   const [form, setForm] = useState({
@@ -17,6 +18,7 @@ function Sobre({ onNext, onBack, data }) {
       
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Sobre mim *</label>
+        <AIBadge text="Este texto será formalizado automaticamente pela IA" />
         <textarea
           value={form.sobre}
           onChange={(e) => setForm({ ...form, sobre: e.target.value })}
