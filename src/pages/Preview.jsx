@@ -1,56 +1,70 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { db, doc, setDoc, deleteDoc } from '../config/firebase';
-import { improveText } from '../services/groqService';
+import TemplateRenderer from '../components/templates/TemplateRenderer';
+
+// Função de compressão (idêntica à do componente Foto)
+const compressImage = (file, maxWidth = 800, quality = 0.7) => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth) {
+          height = (maxWidth / width) * height;
+          width = maxWidth;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+};
 
 function Preview() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { data: initialData, uid, isPublicView = false, isNewCreation = false } = location.state || { data: {}, uid: null, isPublicView: false, isNewCreation: false };
+  const { data: initialData, uid, isPublicView = false } = location.state || { data: null, uid: null, isPublicView: false };
 
   const [editData, setEditData] = useState(initialData);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
-  const [improving, setImproving] = useState(false);
+  const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    if (!isNewCreation || isPublicView) {
-      setImproving(false);
-      return;
-    }
-
-    const improveAllTexts = async () => {
-      setImproving(true);
-      const improved = { ...editData };
-      
-      const fieldsToImprove = ['descricao', 'sobre'];
-      for (const field of fieldsToImprove) {
-        if (editData[field] && editData[field].length > 10) {
-          const improvedText = await improveText(editData[field], field);
-          improved[field] = improvedText;
-        }
-      }
-      
-      if (editData.experiencias && editData.experiencias.length > 0) {
-        improved.experiencias = await Promise.all(
-          editData.experiencias.map(async (exp) => {
-            if (exp.descricao && exp.descricao.length > 10) {
-              const improvedDesc = await improveText(exp.descricao, 'descrição da experiência');
-              return { ...exp, descricao: improvedDesc };
-            }
-            return exp;
-          })
-        );
-      }
-      
-      setEditData(improved);
-      setImproving(false);
-    };
-    
-    improveAllTexts();
-  }, []);
+  // Redireciona se acessado diretamente sem dados
+  if (!initialData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+        <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center">
+          <div className="text-6xl mb-4">🚧</div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Nenhum portfólio carregado</h2>
+          <p className="text-gray-500 mb-6">Para visualizar o preview, crie seu portfólio pelo formulário.</p>
+          <button
+            onClick={() => navigate('/criar')}
+            className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition font-medium"
+          >
+            🚀 Criar meu portfólio
+          </button>
+          <button
+            onClick={() => navigate('/')}
+            className="ml-3 px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition font-medium"
+          >
+            🏠 Início
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleChange = (field, value) => {
     setEditData({ ...editData, [field]: value });
@@ -62,66 +76,67 @@ function Preview() {
     setEditData({ ...editData, [type]: updated });
   };
 
-  const handlePublish = async () => {
-  if (!uid) {
-    alert('Usuário não autenticado.');
-    return;
-  }
-
-  setIsSaving(true);
-
-  const siteData = {
-    ...editData,
-    uid,
-    updatedAt: new Date().toISOString()
+  // Upload de foto com compressão (sem Firebase Storage)
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const compressed = await compressImage(file, 800, 0.7);
+      setEditData({ ...editData, foto: compressed });
+    } catch (error) {
+      alert('Erro ao processar imagem: ' + error.message);
+    }
   };
 
-  try {
-    // Salva o portfólio no Firestore
-    await setDoc(doc(db, 'sites', uid), siteData);
+  const handlePublish = async () => {
+    if (!uid) {
+      alert('Usuário não autenticado.');
+      return;
+    }
+    setIsSaving(true);
+    const siteData = { ...editData, uid, updatedAt: new Date().toISOString() };
 
-    // Só salva localmente depois que o Firebase confirmou
-    localStorage.setItem('site_' + uid, JSON.stringify(siteData));
+    // Tenta salvar no Firebase
+    try {
+      await setDoc(doc(db, 'sites', uid), siteData);
+    } catch (error) {
+      console.warn('Firebase setDoc falhou. Salvando no localStorage em modo de teste.', error);
+    }
 
-    const existingListStr = localStorage.getItem('local_sites_list') || '[]';
-    const existingList = JSON.parse(existingListStr);
+    // Salva sempre no localStorage para suporte offline/modo de teste
+    try {
+      localStorage.setItem('site_' + uid, JSON.stringify(siteData));
+      const existingListStr = localStorage.getItem('local_sites_list') || '[]';
+      const existingList = JSON.parse(existingListStr);
+      const filtered = existingList.filter(s => s.uid !== uid && s.subdominio !== siteData.subdominio);
+      filtered.push(siteData);
+      localStorage.setItem('local_sites_list', JSON.stringify(filtered));
+    } catch (e) {
+      console.error('Erro ao salvar no localStorage:', e);
+    }
 
-    const filtered = existingList.filter(
-      s => s.uid !== uid && s.subdominio !== siteData.subdominio
-    );
-
-    filtered.push(siteData);
-
-    localStorage.setItem(
-      'local_sites_list',
-      JSON.stringify(filtered)
-    );
-
-    // Só considera publicado se o Firebase deu certo
     setIsPublished(true);
-
-  } catch (error) {
-    console.error('Erro ao publicar no Firebase:', error);
-
-    alert(
-      'Não foi possível publicar o portfólio. ' +
-      'Verifique sua conexão com o Firebase e tente novamente.'
-    );
-
-  } finally {
     setIsSaving(false);
-  }
-};
+  };
 
   const handleDelete = async () => {
     if (!window.confirm('Tem certeza que deseja excluir este site?')) return;
     try {
       await deleteDoc(doc(db, 'sites', uid));
-      alert('Site excluído com sucesso.');
-      navigate('/');
     } catch (error) {
-      alert('Erro ao excluir: ' + error.message);
+      console.warn('Firebase deleteDoc falhou. Deletando do localStorage.', error);
     }
+
+    try {
+      localStorage.removeItem('site_' + uid);
+      const existingListStr = localStorage.getItem('local_sites_list') || '[]';
+      const existingList = JSON.parse(existingListStr);
+      const filtered = existingList.filter(s => s.uid !== uid);
+      localStorage.setItem('local_sites_list', JSON.stringify(filtered));
+    } catch (e) {}
+
+    alert('Site excluído com sucesso.');
+    navigate('/');
   };
 
   if (isPublished) {
@@ -143,47 +158,37 @@ function Preview() {
     );
   }
 
-  if (!editData) {
-    return <div className="text-center py-12">Carregando...</div>;
-  }
-
-  const primaryColor = editData.cor_primaria || '#3B82F6';
-  const secondaryColor = editData.cor_secundaria || '#1E40AF';
   const showEditButtons = !isPublicView && uid;
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
+    <div className="min-h-screen bg-gray-200 py-6 px-4">
       <div className="max-w-4xl mx-auto">
-        {!isPublicView && improving && (
-          <div className="bg-blue-50 border border-blue-200 text-blue-700 p-3 rounded-lg mb-4 text-center">
-            ✨ Melhorando seus textos com IA...
-          </div>
-        )}
 
+        {/* Barra de ações (edição/publicação) */}
         {showEditButtons && (
-          <div className="flex flex-wrap gap-3 justify-end mb-6">
+          <div className="flex flex-wrap gap-3 justify-end mb-4 bg-white/80 backdrop-blur px-4 py-3 rounded-2xl shadow-sm">
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition text-sm"
             >
-              {isEditing ? '🔒 Visualizar' : '✏️ Editar'}
+              {isEditing ? '🔒 Fechar edição' : '✏️ Editar dados'}
             </button>
             <button
               onClick={handlePublish}
               disabled={isSaving}
-              className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition disabled:opacity-50"
+              className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition disabled:opacity-50 text-sm"
             >
               {isSaving ? 'Publicando...' : '🚀 Publicar Site'}
             </button>
             <button
               onClick={handleDelete}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-sm"
             >
-              🗑️ Excluir Site
+              🗑️ Excluir
             </button>
             <button
               onClick={() => navigate('/')}
-              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
+              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition text-sm"
             >
               🏠 Início
             </button>
@@ -191,7 +196,7 @@ function Preview() {
         )}
 
         {isPublicView && (
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-4">
             <button
               onClick={() => navigate('/galeria')}
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
@@ -207,284 +212,171 @@ function Preview() {
           </div>
         )}
 
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div style={{ backgroundColor: primaryColor }} className="px-6 py-12 md:py-16 flex flex-col md:flex-row items-center gap-6">
-            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-lg overflow-hidden flex-shrink-0">
-              {editData.foto ? (
-                <img src={editData.foto} alt="Foto" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full bg-gray-300 flex items-center justify-center text-4xl text-gray-500">👤</div>
-              )}
+        {/* Painel de edição inline (abre quando clica em "Editar dados") */}
+        {isEditing && (
+          <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 space-y-5">
+            <h3 className="text-lg font-bold text-gray-800 border-b pb-2">✏️ Editar dados do portfólio</h3>
+
+            {/* Foto */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Foto</label>
+              <div className="flex items-center gap-3">
+                {editData.foto && (
+                  <img src={editData.foto} alt="Foto atual" className="w-14 h-14 rounded-full object-cover border" />
+                )}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current.click()}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm"
+                >
+                  📷 Trocar foto
+                </button>
+                <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handlePhotoUpload} />
+              </div>
             </div>
-            <div className="text-white text-center md:text-left">
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={editData.nome || ''}
-                  onChange={(e) => handleChange('nome', e.target.value)}
-                  className="text-3xl md:text-4xl font-bold bg-transparent border-b-2 border-white/30 focus:border-white outline-none w-full"
-                  placeholder="Seu nome"
-                />
-              ) : (
-                <h1 className="text-3xl md:text-4xl font-bold capitalize">{editData.nome || 'Seu Nome'}</h1>
-              )}
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={editData.titulo || ''}
-                  onChange={(e) => handleChange('titulo', e.target.value)}
-                  className="text-lg md:text-xl bg-transparent border-b-2 border-white/30 focus:border-white outline-none w-full mt-1"
-                  placeholder="Seu título"
-                />
-              ) : (
-                <p className="text-lg md:text-xl capitalize">{editData.titulo || 'Seu Título'}</p>
-              )}
+
+            {/* Nome e título */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                <input type="text" value={editData.nome || ''} onChange={(e) => handleChange('nome', e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Seu nome" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Título profissional</label>
+                <input type="text" value={editData.titulo || ''} onChange={(e) => handleChange('titulo', e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ex: Desenvolvedor Fullstack" />
+              </div>
             </div>
-          </div>
 
-          <div className="p-6 space-y-6">
-            <section className="bg-gray-50 p-4 rounded-xl">
-              <h2 className="text-xl font-bold text-gray-800 mb-2" style={{ color: primaryColor }}>Sobre mim</h2>
-              {isEditing ? (
-                <textarea
-                  value={editData.sobre || ''}
-                  onChange={(e) => handleChange('sobre', e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-y"
-                  rows="4"
-                  placeholder="Descreva-se..."
-                />
-              ) : (
-                <p className="text-gray-700 leading-relaxed capitalize">{editData.sobre || 'Nenhuma descrição fornecida.'}</p>
-              )}
-            </section>
+            {/* Descrição */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Descrição breve</label>
+              <input type="text" value={editData.descricao || ''} onChange={(e) => handleChange('descricao', e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Frase de apresentação" />
+            </div>
 
-            {/* Experiência */}
-            <section className="bg-gray-50 p-4 rounded-xl">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ color: secondaryColor }}>Experiência</h3>
-              {isEditing ? (
-                <div>
-                  {editData.experiencias && editData.experiencias.map((exp, index) => (
-                    <div key={index} className="border-b border-gray-200 pb-3 mb-3">
-                      <input
-                        type="text"
-                        value={exp.empresa || ''}
-                        onChange={(e) => handleNestedChange('experiencias', index, 'empresa', e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg p-2 mb-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                        placeholder="Empresa"
-                      />
-                      <input
-                        type="text"
-                        value={exp.cargo || ''}
-                        onChange={(e) => handleNestedChange('experiencias', index, 'cargo', e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg p-2 mb-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                        placeholder="Cargo"
-                      />
-                      <textarea
-                        value={exp.descricao || ''}
-                        onChange={(e) => handleNestedChange('experiencias', index, 'descricao', e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-y"
-                        rows="2"
-                        placeholder="Descrição"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const updated = editData.experiencias.filter((_, i) => i !== index);
-                          setEditData({ ...editData, experiencias: updated });
-                        }}
-                        className="text-red-500 text-sm hover:text-red-700 mt-1"
-                      >
-                        Remover
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const updated = [...(editData.experiencias || []), { empresa: '', cargo: '', descricao: '' }];
-                      setEditData({ ...editData, experiencias: updated });
-                    }}
-                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                  >
-                    Adicionar experiência
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {editData.experiencias && editData.experiencias.length > 0 ? (
-                    editData.experiencias.map((exp, idx) => (
-                      <div key={idx} className="border-b border-gray-200 pb-2">
-                        <p className="font-medium capitalize">{exp.empresa}</p>
-                        <p className="capitalize">{exp.cargo}</p>
-                        {exp.descricao && <p className="text-sm text-gray-600 capitalize">{exp.descricao}</p>}
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-gray-500">Nenhuma experiência adicionada.</p>
-                  )}
-                </div>
-              )}
-            </section>
-
-            {/* Formação */}
-            <section className="bg-gray-50 p-4 rounded-xl">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ color: secondaryColor }}>Formação</h3>
-              {isEditing ? (
-                <div>
-                  {editData.educacoes && editData.educacoes.map((edu, index) => (
-                    <div key={index} className="border-b border-gray-200 pb-3 mb-3">
-                      <input
-                        type="text"
-                        value={edu.instituicao || ''}
-                        onChange={(e) => handleNestedChange('educacoes', index, 'instituicao', e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg p-2 mb-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                        placeholder="Instituição"
-                      />
-                      <input
-                        type="text"
-                        value={edu.curso || ''}
-                        onChange={(e) => handleNestedChange('educacoes', index, 'curso', e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg p-2 mb-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                        placeholder="Curso"
-                      />
-                      <input
-                        type="text"
-                        value={edu.ano || ''}
-                        onChange={(e) => handleNestedChange('educacoes', index, 'ano', e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                        placeholder="Ano"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const updated = editData.educacoes.filter((_, i) => i !== index);
-                          setEditData({ ...editData, educacoes: updated });
-                        }}
-                        className="text-red-500 text-sm hover:text-red-700 mt-1"
-                      >
-                        Remover
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const updated = [...(editData.educacoes || []), { instituicao: '', curso: '', ano: '' }];
-                      setEditData({ ...editData, educacoes: updated });
-                    }}
-                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                  >
-                    Adicionar formação
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {editData.educacoes && editData.educacoes.length > 0 ? (
-                    editData.educacoes.map((edu, idx) => (
-                      <div key={idx} className="border-b border-gray-200 pb-2">
-                        <p className="font-medium capitalize">{edu.instituicao}</p>
-                        <p className="capitalize">{edu.curso}</p>
-                        {edu.ano && <p className="text-sm text-gray-600">{edu.ano}</p>}
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-gray-500">Nenhuma formação adicionada.</p>
-                  )}
-                </div>
-              )}
-            </section>
+            {/* Sobre */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Sobre mim</label>
+              <textarea value={editData.sobre || ''} onChange={(e) => handleChange('sobre', e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none resize-y" rows="3" />
+            </div>
 
             {/* Habilidades */}
-            <section className="bg-gray-50 p-4 rounded-xl">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ color: secondaryColor }}>Habilidades</h3>
-              {isEditing ? (
-                <>
-                  <label className="block text-sm text-gray-600">Técnicas</label>
-                  <input
-                    type="text"
-                    value={editData.tecnicas || ''}
-                    onChange={(e) => handleChange('tecnicas', e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-2 mb-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                    placeholder="JavaScript, React, Python"
-                  />
-                  <label className="block text-sm text-gray-600">Interpessoais</label>
-                  <input
-                    type="text"
-                    value={editData.pessoais || ''}
-                    onChange={(e) => handleChange('pessoais', e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                    placeholder="Comunicação, Liderança"
-                  />
-                </>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {editData.tecnicas && editData.tecnicas.split(',').map((skill, i) => (
-                    <span key={i} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm capitalize">{skill.trim()}</span>
-                  ))}
-                  {editData.pessoais && editData.pessoais.split(',').map((skill, i) => (
-                    <span key={i} className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm capitalize">{skill.trim()}</span>
-                  ))}
-                </div>
-              )}
-            </section>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Habilidades técnicas</label>
+                <input type="text" value={editData.tecnicas || ''} onChange={(e) => handleChange('tecnicas', e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="React, Python, SQL" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Habilidades interpessoais</label>
+                <input type="text" value={editData.pessoais || ''} onChange={(e) => handleChange('pessoais', e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Comunicação, Liderança" />
+              </div>
+            </div>
 
             {/* Contato */}
-            <section className="bg-gray-50 p-4 rounded-xl">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ color: secondaryColor }}>Contato</h3>
-              <div className="grid md:grid-cols-2 gap-4 text-gray-700">
-                {isEditing ? (
-                  <>
-                    <input
-                      type="email"
-                      value={editData.email || ''}
-                      onChange={(e) => handleChange('email', e.target.value)}
-                      className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                      placeholder="Email"
-                    />
-                    <input
-                      type="tel"
-                      value={editData.telefone || ''}
-                      onChange={(e) => handleChange('telefone', e.target.value)}
-                      className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                      placeholder="Telefone"
-                    />
-                    <input
-                      type="text"
-                      value={editData.instagram || ''}
-                      onChange={(e) => handleChange('instagram', e.target.value)}
-                      className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                      placeholder="Instagram"
-                    />
-                    <input
-                      type="text"
-                      value={editData.linkedin || ''}
-                      onChange={(e) => handleChange('linkedin', e.target.value)}
-                      className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                      placeholder="LinkedIn"
-                    />
-                  </>
-                ) : (
-                  <>
-                    <p>📧 {editData.email || 'Não informado'}</p>
-                    <p>📱 {editData.telefone || 'Não informado'}</p>
-                    <p>📷 {editData.instagram || 'Não informado'}</p>
-                    <p>💼 {editData.linkedin || 'Não informado'}</p>
-                  </>
-                )}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input type="email" value={editData.email || ''} onChange={(e) => handleChange('email', e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" />
               </div>
-            </section>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                <input type="tel" value={editData.telefone || ''} onChange={(e) => handleChange('telefone', e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Instagram</label>
+                <input type="text" value={editData.instagram || ''} onChange={(e) => handleChange('instagram', e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn</label>
+                <input type="text" value={editData.linkedin || ''} onChange={(e) => handleChange('linkedin', e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" />
+              </div>
+            </div>
 
-            <section className="border-t border-gray-200 pt-4 text-sm text-gray-600">
-              <p>🔗 /portfolio/{editData.subdominio || 'meusite'}</p>
-            </section>
+            {/* Experiências */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Experiências</label>
+              <div className="space-y-3">
+                {(editData.experiencias || []).map((exp, index) => (
+                  <div key={index} className="border border-gray-200 rounded-xl p-3 space-y-2">
+                    <input type="text" value={exp.empresa || ''} onChange={(e) => handleNestedChange('experiencias', index, 'empresa', e.target.value)}
+                      className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Empresa" />
+                    <input type="text" value={exp.cargo || ''} onChange={(e) => handleNestedChange('experiencias', index, 'cargo', e.target.value)}
+                      className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Cargo" />
+                    <textarea value={exp.descricao || ''} onChange={(e) => handleNestedChange('experiencias', index, 'descricao', e.target.value)}
+                      className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y" rows="2" placeholder="Descrição" />
+                    <button type="button" onClick={() => setEditData({ ...editData, experiencias: editData.experiencias.filter((_, i) => i !== index) })}
+                      className="text-red-500 text-xs hover:text-red-700">Remover</button>
+                  </div>
+                ))}
+                <button type="button"
+                  onClick={() => setEditData({ ...editData, experiencias: [...(editData.experiencias || []), { empresa: '', cargo: '', descricao: '' }] })}
+                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm">
+                  + Adicionar experiência
+                </button>
+              </div>
+            </div>
+
+            {/* Formação */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Formação</label>
+              <div className="space-y-3">
+                {(editData.educacoes || []).map((edu, index) => (
+                  <div key={index} className="border border-gray-200 rounded-xl p-3 space-y-2">
+                    <input type="text" value={edu.instituicao || ''} onChange={(e) => handleNestedChange('educacoes', index, 'instituicao', e.target.value)}
+                      className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Instituição" />
+                    <input type="text" value={edu.curso || ''} onChange={(e) => handleNestedChange('educacoes', index, 'curso', e.target.value)}
+                      className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Curso" />
+                    <input type="text" value={edu.ano || ''} onChange={(e) => handleNestedChange('educacoes', index, 'ano', e.target.value)}
+                      className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ano" />
+                    <button type="button" onClick={() => setEditData({ ...editData, educacoes: editData.educacoes.filter((_, i) => i !== index) })}
+                      className="text-red-500 text-xs hover:text-red-700">Remover</button>
+                  </div>
+                ))}
+                <button type="button"
+                  onClick={() => setEditData({ ...editData, educacoes: [...(editData.educacoes || []), { instituicao: '', curso: '', ano: '' }] })}
+                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm">
+                  + Adicionar formação
+                </button>
+              </div>
+            </div>
+
+            {/* Cores */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Cor primária</label>
+                <div className="flex items-center gap-2">
+                  <input type="color" value={editData.cor_primaria || '#3B82F6'} onChange={(e) => handleChange('cor_primaria', e.target.value)}
+                    className="w-10 h-10 rounded cursor-pointer border-0" />
+                  <span className="text-sm text-gray-500">{editData.cor_primaria || '#3B82F6'}</span>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Cor secundária</label>
+                <div className="flex items-center gap-2">
+                  <input type="color" value={editData.cor_secundaria || '#1E40AF'} onChange={(e) => handleChange('cor_secundaria', e.target.value)}
+                    className="w-10 h-10 rounded cursor-pointer border-0" />
+                  <span className="text-sm text-gray-500">{editData.cor_secundaria || '#1E40AF'}</span>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-xs text-gray-400 pt-2">✨ As alterações são salvas ao clicar em "Publicar Site".</p>
           </div>
-        </div>
-
-        {!isPublicView && (
-          <p className="text-center text-xs text-gray-400 mt-6">
-            ✨ Clique em "Editar" para alterar qualquer campo. As alterações são salvas ao publicar.
-          </p>
         )}
+
+        {/* Preview com o template selecionado */}
+        <div className="rounded-2xl overflow-hidden shadow-2xl">
+          <TemplateRenderer data={editData} />
+        </div>
       </div>
     </div>
   );
