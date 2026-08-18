@@ -11,7 +11,7 @@ import Foto from '../components/Foto';
 import Paleta from '../components/Paleta';
 import EscolhaTemplate from '../components/EscolhaTemplate';
 import Subdominio from '../components/Subdominio';
-import { improveText } from '../services/groqService';
+import { improveText, isGroqConfigured } from '../services/groqService';
 
 function Formulario() {
   const navigate = useNavigate();
@@ -65,26 +65,53 @@ function Formulario() {
       setLoading(true);
 
       const improved = { ...updated };
+      let aiWarning = '';
 
-      // Só chama a IA se o usuário não tiver desativado a formalização
-      // na etapa "Escolha seu template".
-      if (improved.iaFormalizacaoAtiva !== false) {
-        if (improved.descricao?.length > 10) {
-          improved.descricao = await improveText(improved.descricao, 'descrição profissional');
+      try {
+        // A IA é opcional: se estiver desativada, o texto original é preservado.
+        if (improved.iaFormalizacaoAtiva !== false) {
+          if (!isGroqConfigured()) {
+            throw new Error(
+              'A chave da IA não foi configurada. No Render, adicione VITE_GROQ_API_KEY nas Environment Variables e faça um novo deploy.'
+            );
+          }
+
+          if (improved.descricao?.length > 10) {
+            improved.descricao = await improveText(
+              improved.descricao,
+              'descrição profissional'
+            );
+          }
+
+          if (improved.sobre?.length > 10) {
+            improved.sobre = await improveText(
+              improved.sobre,
+              'apresentação pessoal'
+            );
+          }
+
+          if (improved.experiencias?.length > 0) {
+            improved.experiencias = await Promise.all(
+              improved.experiencias.map(async (exp) => {
+                if (exp.descricao?.length > 10) {
+                  return {
+                    ...exp,
+                    descricao: await improveText(
+                      exp.descricao,
+                      'experiência profissional'
+                    )
+                  };
+                }
+                return exp;
+              })
+            );
+          }
         }
-        if (improved.sobre?.length > 10) {
-          improved.sobre = await improveText(improved.sobre, 'apresentação pessoal');
-        }
-        if (improved.experiencias?.length > 0) {
-          improved.experiencias = await Promise.all(
-            improved.experiencias.map(async (exp) => {
-              if (exp.descricao?.length > 10) {
-                return { ...exp, descricao: await improveText(exp.descricao, 'experiência profissional') };
-              }
-              return exp;
-            })
-          );
-        }
+      } catch (error) {
+        console.error('Erro ao usar a IA:', error);
+        aiWarning = error?.message || 'Não foi possível usar a IA.';
+      } finally {
+        setLoading(false);
       }
 
       navigate('/preview', {
@@ -92,7 +119,8 @@ function Formulario() {
           data: improved,
           uid: uid || newData.uid,
           fromLocalStorage: false,
-          isNewCreation: false
+          isNewCreation: true,
+          aiWarning
         }
       });
     } else {
