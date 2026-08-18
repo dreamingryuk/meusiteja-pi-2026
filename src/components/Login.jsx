@@ -253,4 +253,7 @@ function Login({ onNext, onBack }) {
         </button>
       </div>
     </form>
-  )
+  );
+}
+
+export default Login;
