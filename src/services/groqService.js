@@ -18,14 +18,13 @@ export async function improveText(text, context) {
       if (modelsData && modelsData.data && modelsData.data.length > 0) {
         const modelIds = modelsData.data.map(m => m.id);
         
-        // Ordem de preferência de modelos
+        // Ordem de preferência focada em modelos mais rápidos e que consomem menos tokens
         const preferred = [
-          'llama-3.3-70b-versatile',
+          'gemma2-9b-it',
           'llama-3.1-8b-instant',
-          'llama-3.2-90b-text-preview',
-          'llama-3.2-3b-preview',
           'mixtral-8x7b-32768',
-          'gemma2-9b-it'
+          'llama-3.2-3b-preview',
+          'llama-3.3-70b-versatile'
         ];
         
         selectedModel = preferred.find(id => modelIds.includes(id)) || modelIds[0];
@@ -53,7 +52,7 @@ export async function improveText(text, context) {
           }
         ],
         temperature: 0.6,
-        max_tokens: 800
+        max_tokens: 500
       })
     });
 
