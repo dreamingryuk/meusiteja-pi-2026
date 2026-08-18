@@ -76,14 +76,16 @@ function Formulario() {
           improved.sobre = await improveText(improved.sobre, 'apresentação pessoal');
         }
         if (improved.experiencias?.length > 0) {
-          improved.experiencias = await Promise.all(
-            improved.experiencias.map(async (exp) => {
-              if (exp.descricao?.length > 10) {
-                return { ...exp, descricao: await improveText(exp.descricao, 'experiência profissional') };
-              }
-              return exp;
-            })
-          );
+          const novasExperiencias = [];
+          for (const exp of improved.experiencias) {
+            if (exp.descricao?.length > 10) {
+              const novaDescricao = await improveText(exp.descricao, 'experiência profissional');
+              novasExperiencias.push({ ...exp, descricao: novaDescricao });
+            } else {
+              novasExperiencias.push(exp);
+            }
+          }
+          improved.experiencias = novasExperiencias;
         }
       }
 
