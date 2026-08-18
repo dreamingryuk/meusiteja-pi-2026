@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { auth, db, doc, setDoc, deleteDoc } from '../config/firebase';
+import { db, doc, setDoc, deleteDoc } from '../config/firebase';
 
 // Função de compressão (idêntica à do componente Foto)
 const compressImage = (file, maxWidth = 800, quality = 0.7) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
@@ -19,17 +19,12 @@ const compressImage = (file, maxWidth = 800, quality = 0.7) => {
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          reject(new Error('Não foi possível processar a imagem.'));
-          return;
-        }
         ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', quality));
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
       };
-      img.onerror = () => reject(new Error('Não foi possível carregar a imagem.'));
       img.src = e.target.result;
     };
-    reader.onerror = () => reject(new Error('Não foi possível ler o arquivo.'));
     reader.readAsDataURL(file);
   });
 };
@@ -37,7 +32,7 @@ const compressImage = (file, maxWidth = 800, quality = 0.7) => {
 function Preview() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { data: initialData, uid, isPublicView = false } = location.state || { data: null, uid: null, isPublicView: false };
+  const { data: initialData, uid, isPublicView = false } = location.state || { data: {}, uid: null, isPublicView: false };
 
   const [editData, setEditData] = useState(initialData);
   const [isEditing, setIsEditing] = useState(false);
@@ -47,71 +42,50 @@ function Preview() {
   const fileInputRef = useRef(null);
 
   const handleChange = (field, value) => {
-    setEditData((previousData) => ({ ...previousData, [field]: value }));
+    setEditData({ ...editData, [field]: value });
   };
 
   const handleNestedChange = (type, index, field, value) => {
-    const updated = [...(editData[type] || [])];
+    const updated = [...editData[type]];
     updated[index] = { ...updated[index], [field]: value };
-    setEditData((previousData) => ({ ...previousData, [type]: updated }));
+    setEditData({ ...editData, [type]: updated });
   };
 
   // Upload de foto com compressão (sem Firebase Storage)
   const handlePhotoUpload = async (e) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files[0];
     if (!file) return;
     try {
       const compressed = await compressImage(file, 800, 0.7);
-      setEditData((previousData) => ({ ...previousData, foto: compressed }));
+      setEditData({ ...editData, foto: compressed });
     } catch (error) {
-      console.error('Erro ao processar imagem:', error);
-      alert('Erro ao processar imagem: ' + (error?.message || 'erro desconhecido'));
+      alert('Erro ao processar imagem: ' + error.message);
     }
   };
 
   const handlePublish = async () => {
-    // O documento deve usar o mesmo UID da sessão do Firebase Auth.
-    const user = auth.currentUser;
-    if (!user) {
-      alert('Sua sessão não está autenticada no Firebase.\n\nFaça login novamente para publicar seu site.');
-      navigate('/criar');
+    if (!uid) {
+      alert('Usuário não autenticado.');
       return;
     }
-
-    const authenticatedUid = user.uid;
     setIsSaving(true);
-
     try {
-      await setDoc(doc(db, 'sites', authenticatedUid), {
-        ...editData,
-        uid: authenticatedUid,
-        updatedAt: new Date().toISOString()
-      });
+      await setDoc(doc(db, 'sites', uid), { ...editData, uid });
       setIsPublished(true);
     } catch (error) {
-      console.error('Erro ao publicar:', error);
-      alert('Erro ao publicar: ' + (error?.message || 'erro desconhecido'));
-    } finally {
-      setIsSaving(false);
+      alert('Erro ao publicar: ' + error.message);
     }
+    setIsSaving(false);
   };
 
   const handleDelete = async () => {
     if (!window.confirm('Tem certeza que deseja excluir este site?')) return;
-
-    const authenticatedUid = auth.currentUser?.uid || uid;
-    if (!authenticatedUid) {
-      alert('Usuário não autenticado.');
-      return;
-    }
-
     try {
-      await deleteDoc(doc(db, 'sites', authenticatedUid));
+      await deleteDoc(doc(db, 'sites', uid));
       alert('Site excluído com sucesso.');
       navigate('/');
     } catch (error) {
-      console.error('Erro ao excluir:', error);
-      alert('Erro ao excluir: ' + (error?.message || 'erro desconhecido'));
+      alert('Erro ao excluir: ' + error.message);
     }
   };
 
