@@ -11,58 +11,33 @@ function Login({ onNext, onBack }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
     try {
-      const normalizedEmail = email.trim();
-      const userCredential = isLogin
-        ? await signInWithEmailAndPassword(auth, normalizedEmail, senha)
-        : await createUserWithEmailAndPassword(auth, normalizedEmail, senha);
-
-      // O UID usado no Firestore é sempre o UID real do Firebase Auth.
-      const user = userCredential?.user;
-      if (!user) {
-        throw new Error('O Firebase não retornou um usuário autenticado.');
+      let userCredential;
+      if (isLogin) {
+        userCredential = await signInWithEmailAndPassword(auth, email, senha);
+      } else {
+        userCredential = await createUserWithEmailAndPassword(auth, email, senha);
       }
+      const uid = userCredential.user.uid;
 
-      const uid = user.uid;
-      let existingSite = null;
-
-      // Uma falha de leitura do Firestore não deve substituir o UID real
-      // nem impedir o usuário de continuar para a criação do portfólio.
-      try {
-        const siteRef = doc(db, 'sites', uid);
-        const siteSnap = await getDoc(siteRef);
-        if (siteSnap.exists()) {
-          existingSite = siteSnap.data();
-        }
-      } catch (firestoreError) {
-        console.error('Erro ao consultar o site no Firestore:', firestoreError);
+      const siteRef = doc(db, 'sites', uid);
+      const siteSnap = await getDoc(siteRef);
+      
+      if (siteSnap.exists()) {
+        // Usuário já tem site → redireciona para preview com isNewCreation = false
+        onNext({ 
+          email, 
+          senha, 
+          uid, 
+          existingSite: siteSnap.data(),
+          isNewCreation: false // Importante: não rodar IA novamente
+        });
+      } else {
+        // Novo usuário ou sem site → continua o formulário
+        onNext({ email, senha, uid, existingSite: null });
       }
-
-      // A senha nunca é repassada para as próximas telas.
-      onNext({
-        email: user.email || normalizedEmail,
-        uid,
-        existingSite,
-        isNewCreation: !existingSite
-      });
     } catch (error) {
-      console.error('Erro de autenticação:', error);
-
-      const messages = {
-        'auth/invalid-credential': 'E-mail ou senha incorretos.',
-        'auth/invalid-email': 'Digite um endereço de e-mail válido.',
-        'auth/user-not-found': 'Usuário não encontrado.',
-        'auth/wrong-password': 'Senha incorreta.',
-        'auth/email-already-in-use': 'Este e-mail já está cadastrado. Tente entrar na sua conta.',
-        'auth/weak-password': 'A senha é muito fraca. Use uma senha mais segura.',
-        'auth/network-request-failed': 'Não foi possível conectar ao Firebase. Verifique sua internet.',
-        'auth/too-many-requests': 'Muitas tentativas. Aguarde alguns minutos e tente novamente.',
-        'auth/operation-not-allowed': 'O método de login por e-mail e senha não está habilitado no Firebase.',
-        'auth/user-disabled': 'Esta conta foi desativada.'
-      };
-
-      setError(messages[error?.code] || error?.message || 'Ocorreu um erro ao autenticar.');
+      setError(error.message);
     }
   };
 
