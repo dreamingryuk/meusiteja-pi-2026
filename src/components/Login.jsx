@@ -1,52 +1,201 @@
 import React, { useState } from 'react';
 import { auth, db, doc, getDoc } from '../config/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword
+} from 'firebase/auth';
 
 function Login({ onNext, onBack }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setError('');
+    setIsLoading(true);
+
     try {
       let userCredential;
-      let uid;
-      let existingSite = null;
 
-      try {
-        if (isLogin) {
-          userCredential = await signInWithEmailAndPassword(auth, email, senha);
-        } else {
-          userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-        }
-        uid = userCredential.user.uid;
-      } catch (authError) {
-        console.error('Erro na autenticação Firebase:', authError);
-        setError(authError.message);
-        return;
+      // =========================================================
+      // 1. AUTENTICAÇÃO
+      // =========================================================
+      //
+      // O login/cadastro acontece exclusivamente pelo Firebase.
+      // Não existe mais UID "demo-" ou usuário falso.
+      //
+      if (isLogin) {
+        userCredential = await signInWithEmailAndPassword(
+          auth,
+          email.trim(),
+          senha
+        );
+      } else {
+        userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email.trim(),
+          senha
+        );
       }
+
+      // =========================================================
+      // 2. PEGAR O UID REAL DO FIREBASE AUTHENTICATION
+      // =========================================================
+      const user = userCredential.user;
+
+      if (!user) {
+        throw new Error(
+          'O Firebase não retornou um usuário autenticado.'
+        );
+      }
+
+      const uid = user.uid;
+
+      console.log('Usuário autenticado com sucesso.');
+      console.log('Firebase Auth UID:', uid);
+      console.log('Email:', user.email);
+
+      // =========================================================
+      // 3. PROCURAR O SITE DO USUÁRIO
+      // =========================================================
+      //
+      // Essa consulta é separada da autenticação.
+      //
+      // Se o Firestore tiver algum problema, NÃO vamos trocar
+      // o UID real por um UID "demo".
+      //
+      let existingSite = null;
 
       try {
         const siteRef = doc(db, 'sites', uid);
         const siteSnap = await getDoc(siteRef);
+
         if (siteSnap.exists()) {
           existingSite = siteSnap.data();
+
+          console.log(
+            'Site encontrado no Firestore:',
+            existingSite
+          );
+        } else {
+          console.log(
+            'Nenhum site encontrado para este usuário.'
+          );
         }
       } catch (firestoreError) {
-        console.warn('Não foi possível carregar o site existente:', firestoreError);
+        console.error(
+          'Erro ao consultar o site no Firestore:',
+          firestoreError
+        );
+
+        /*
+         * IMPORTANTE:
+         *
+         * Não fazemos:
+         *
+         * uid = 'demo-' + ...
+         *
+         * O usuário continua com o UID REAL do Firebase.
+         *
+         * Isso evita o problema em que:
+         *
+         * Firebase Auth UID = ABC123
+         *
+         * mas o documento usa:
+         *
+         * uid = demo-email...
+         *
+         * e as regras do Firestore recusam a gravação.
+         */
       }
 
+      // =========================================================
+      // 4. CONTINUAR PARA O PRÓXIMO PASSO
+      // =========================================================
+      //
+      // Não enviamos a senha para os componentes seguintes.
+      // O Firebase já mantém a sessão autenticada.
+      //
       onNext({
-        email,
+        email: user.email || email.trim(),
         uid,
         existingSite,
         isNewCreation: !existingSite
       });
+
     } catch (err) {
-      setError(err.message);
+      console.error(
+        'Erro de autenticação:',
+        err
+      );
+
+      // =========================================================
+      // TRATAMENTO DOS ERROS DO FIREBASE AUTH
+      // =========================================================
+
+      let message = 'Não foi possível entrar.';
+
+      switch (err?.code) {
+        case 'auth/invalid-credential':
+          message = 'E-mail ou senha incorretos.';
+          break;
+
+        case 'auth/invalid-email':
+          message = 'Digite um endereço de e-mail válido.';
+          break;
+
+        case 'auth/user-not-found':
+          message = 'Usuário não encontrado.';
+          break;
+
+        case 'auth/wrong-password':
+          message = 'Senha incorreta.';
+          break;
+
+        case 'auth/email-already-in-use':
+          message =
+            'Este e-mail já está cadastrado. Tente entrar na sua conta.';
+          break;
+
+        case 'auth/weak-password':
+          message =
+            'A senha é muito fraca. Use uma senha mais segura.';
+          break;
+
+        case 'auth/network-request-failed':
+          message =
+            'Não foi possível conectar ao Firebase. Verifique sua internet.';
+          break;
+
+        case 'auth/too-many-requests':
+          message =
+            'Muitas tentativas. Aguarde alguns minutos e tente novamente.';
+          break;
+
+        case 'auth/operation-not-allowed':
+          message =
+            'O método de login por e-mail e senha não está habilitado no Firebase.';
+          break;
+
+        case 'auth/user-disabled':
+          message =
+            'Esta conta foi desativada.';
+          break;
+
+        default:
+          message =
+            err?.message ||
+            'Ocorreu um erro ao autenticar.';
+      }
+
+      setError(message);
+
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -104,7 +253,4 @@ function Login({ onNext, onBack }) {
         </button>
       </div>
     </form>
-  );
-}
-
-export default Login;
+  )
