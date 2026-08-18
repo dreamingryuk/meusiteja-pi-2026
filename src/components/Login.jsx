@@ -1,98 +1,319 @@
 import React, { useState } from 'react';
 import { auth, db, doc, getDoc } from '../config/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword
+} from 'firebase/auth';
 
 function Login({ onNext, onBack }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setError('');
+    setIsLoading(true);
+
     try {
       let userCredential;
-      if (isLogin) {
-        userCredential = await signInWithEmailAndPassword(auth, email, senha);
-      } else {
-        userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-      }
-      const uid = userCredential.user.uid;
 
-      const siteRef = doc(db, 'sites', uid);
-      const siteSnap = await getDoc(siteRef);
-      
-      if (siteSnap.exists()) {
-        // Usuário já tem site → redireciona para preview com isNewCreation = false
-        onNext({ 
-          email, 
-          senha, 
-          uid, 
-          existingSite: siteSnap.data(),
-          isNewCreation: false // Importante: não rodar IA novamente
-        });
+      // =========================================================
+      // 1. AUTENTICAÇÃO
+      // =========================================================
+      //
+      // O login/cadastro acontece exclusivamente pelo Firebase.
+      // Não existe mais UID "demo-" ou usuário falso.
+      //
+      if (isLogin) {
+        userCredential = await signInWithEmailAndPassword(
+          auth,
+          email.trim(),
+          senha
+        );
       } else {
-        // Novo usuário ou sem site → continua o formulário
-        onNext({ email, senha, uid, existingSite: null });
+        userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email.trim(),
+          senha
+        );
       }
-    } catch (error) {
-      setError(error.message);
+
+      // =========================================================
+      // 2. PEGAR O UID REAL DO FIREBASE AUTHENTICATION
+      // =========================================================
+      const user = userCredential.user;
+
+      if (!user) {
+        throw new Error(
+          'O Firebase não retornou um usuário autenticado.'
+        );
+      }
+
+      const uid = user.uid;
+
+      console.log('Usuário autenticado com sucesso.');
+      console.log('Firebase Auth UID:', uid);
+      console.log('Email:', user.email);
+
+      // =========================================================
+      // 3. PROCURAR O SITE DO USUÁRIO
+      // =========================================================
+      //
+      // Essa consulta é separada da autenticação.
+      //
+      // Se o Firestore tiver algum problema, NÃO vamos trocar
+      // o UID real por um UID "demo".
+      //
+      let existingSite = null;
+
+      try {
+        const siteRef = doc(db, 'sites', uid);
+        const siteSnap = await getDoc(siteRef);
+
+        if (siteSnap.exists()) {
+          existingSite = siteSnap.data();
+
+          console.log(
+            'Site encontrado no Firestore:',
+            existingSite
+          );
+        } else {
+          console.log(
+            'Nenhum site encontrado para este usuário.'
+          );
+        }
+      } catch (firestoreError) {
+        console.error(
+          'Erro ao consultar o site no Firestore:',
+          firestoreError
+        );
+
+        /*
+         * IMPORTANTE:
+         *
+         * Não fazemos:
+         *
+         * uid = 'demo-' + ...
+         *
+         * O usuário continua com o UID REAL do Firebase.
+         *
+         * Isso evita o problema em que:
+         *
+         * Firebase Auth UID = ABC123
+         *
+         * mas o documento usa:
+         *
+         * uid = demo-email...
+         *
+         * e as regras do Firestore recusam a gravação.
+         */
+      }
+
+      // =========================================================
+      // 4. CONTINUAR PARA O PRÓXIMO PASSO
+      // =========================================================
+      //
+      // Não enviamos a senha para os componentes seguintes.
+      // O Firebase já mantém a sessão autenticada.
+      //
+      onNext({
+        email: user.email || email.trim(),
+        uid,
+        existingSite,
+        isNewCreation: !existingSite
+      });
+
+    } catch (err) {
+      console.error(
+        'Erro de autenticação:',
+        err
+      );
+
+      // =========================================================
+      // TRATAMENTO DOS ERROS DO FIREBASE AUTH
+      // =========================================================
+
+      let message = 'Não foi possível entrar.';
+
+      switch (err?.code) {
+        case 'auth/invalid-credential':
+          message = 'E-mail ou senha incorretos.';
+          break;
+
+        case 'auth/invalid-email':
+          message = 'Digite um endereço de e-mail válido.';
+          break;
+
+        case 'auth/user-not-found':
+          message = 'Usuário não encontrado.';
+          break;
+
+        case 'auth/wrong-password':
+          message = 'Senha incorreta.';
+          break;
+
+        case 'auth/email-already-in-use':
+          message =
+            'Este e-mail já está cadastrado. Tente entrar na sua conta.';
+          break;
+
+        case 'auth/weak-password':
+          message =
+            'A senha é muito fraca. Use uma senha mais segura.';
+          break;
+
+        case 'auth/network-request-failed':
+          message =
+            'Não foi possível conectar ao Firebase. Verifique sua internet.';
+          break;
+
+        case 'auth/too-many-requests':
+          message =
+            'Muitas tentativas. Aguarde alguns minutos e tente novamente.';
+          break;
+
+        case 'auth/operation-not-allowed':
+          message =
+            'O método de login por e-mail e senha não está habilitado no Firebase.';
+          break;
+
+        case 'auth/user-disabled':
+          message =
+            'Esta conta foi desativada.';
+          break;
+
+        default:
+          message =
+            err?.message ||
+            'Ocorreu um erro ao autenticar.';
+      }
+
+      setError(message);
+
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4"
+    >
       <div className="text-center mb-6">
-        <h2 className="text-xl font-bold text-gray-800">Acesse sua conta</h2>
-        <p className="text-gray-500 text-sm">Entre ou cadastre-se para continuar</p>
-      </div>
-      
-      {error && <div className="bg-red-100 text-red-700 p-2 rounded text-sm">{error}</div>}
+        <h2 className="text-xl font-bold text-gray-800">
+          Acesse sua conta
+        </h2>
 
+        <p className="text-gray-500 text-sm">
+          Entre ou cadastre-se para continuar
+        </p>
+      </div>
+
+      {/* =====================================================
+          ERRO
+      ====================================================== */}
+      {error && (
+        <div className="bg-red-100 border border-red-200 text-red-700 p-3 rounded-lg text-sm">
+          {error}
+        </div>
+      )}
+
+      {/* =====================================================
+          EMAIL
+      ====================================================== */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Email
+        </label>
+
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
           placeholder="seu@email.com"
+          autoComplete="email"
           required
+          disabled={isLoading}
         />
       </div>
-      
+
+      {/* =====================================================
+          SENHA
+      ====================================================== */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Senha
+        </label>
+
         <input
           type="password"
           value={senha}
           onChange={(e) => setSenha(e.target.value)}
           className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
           placeholder="••••••••"
+          autoComplete={
+            isLogin
+              ? 'current-password'
+              : 'new-password'
+          }
           required
+          disabled={isLoading}
         />
       </div>
 
+      {/* =====================================================
+          ALTERNAR LOGIN / CADASTRO
+      ====================================================== */}
       <div className="flex justify-between text-sm">
-        <button type="button" onClick={() => setIsLogin(!isLogin)} className="text-blue-500 hover:underline">
-          {isLogin ? 'Criar conta' : 'Já tenho conta'}
+        <button
+          type="button"
+          onClick={() => {
+            setIsLogin(!isLogin);
+            setError('');
+          }}
+          className="text-blue-500 hover:underline disabled:opacity-50"
+          disabled={isLoading}
+        >
+          {isLogin
+            ? 'Criar conta'
+            : 'Já tenho conta'}
         </button>
       </div>
-      
+
+      {/* =====================================================
+          BOTÕES
+      ====================================================== */}
       <div className="flex gap-3 pt-2">
+
         {onBack && (
           <button
             type="button"
             onClick={onBack}
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition disabled:opacity-50"
+            disabled={isLoading}
           >
             Voltar
           </button>
         )}
-        <button type="submit" className="flex-1 bg-blue-500 text-white font-medium py-2 rounded-lg hover:bg-blue-600 transition">
-          {isLogin ? 'Entrar' : 'Cadastrar'}
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="flex-1 bg-blue-500 text-white font-medium py-2 rounded-lg hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading
+            ? 'Aguarde...'
+            : isLogin
+              ? 'Entrar'
+              : 'Cadastrar'}
         </button>
+
       </div>
     </form>
   );
