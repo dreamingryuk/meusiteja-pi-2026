@@ -1,7 +1,7 @@
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 // 👇 MODELO CORRIGIDO AQUI 👇
-const GROQ_MODEL = 'llama3-8b-8192';
+const GROQ_MODEL = 'llama-3.1-8b-instant';
 
 const getGroqApiKey = () => {
   const key = import.meta.env.VITE_GROQ_API_KEY;
