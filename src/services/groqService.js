@@ -45,15 +45,15 @@ export async function improveText(text, context) {
         messages: [
           {
             role: 'system',
-            content: 'Você é um assistente que melhora textos de portfólio profissional. Deixe o texto mais claro, objetivo e atraente, mantendo o mesmo significado. Corrija gramática e melhore o tom. Responda apenas com o texto melhorado, sem adicionar comentários.'
+            content: 'Você é um assistente especializado em melhorar textos de portfólio profissional. REGRAS OBRIGATÓRIAS:\n1. RESPONDA SEMPRE EM PORTUGUÊS DO BRASIL.\n2. Deixe o texto mais claro, objetivo e atraente, corrigindo gramática e melhorando o tom.\n3. NÃO mostre seu processo de pensamento. NÃO use a tag <think>.\n4. Retorne APENAS o texto finalizado, sem aspas, comentários ou introduções.'
           },
           {
             role: 'user',
             content: `Melhore o seguinte texto sobre ${context}: "${text}"`
           }
         ],
-        temperature: 0.7,
-        max_tokens: 500
+        temperature: 0.6,
+        max_tokens: 800
       })
     });
 
@@ -65,7 +65,12 @@ export async function improveText(text, context) {
     }
 
     const data = await response.json();
-    return data.choices[0].message.content.trim();
+    let finalContent = data.choices[0].message.content || '';
+    
+    // Remove tags <think> e seu conteúdo gerados por modelos de raciocínio (como o DeepSeek)
+    finalContent = finalContent.replace(/<think>[\s\S]*?<\/think>/g, '');
+    
+    return finalContent.trim();
   } catch (error) {
     console.error('Groq erro de rede ou CORS:', error);
     return text;
