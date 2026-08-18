@@ -11,7 +11,7 @@ import Foto from '../components/Foto';
 import Paleta from '../components/Paleta';
 import EscolhaTemplate from '../components/EscolhaTemplate';
 import Subdominio from '../components/Subdominio';
-import { improveText, isGroqConfigured } from '../services/groqService';
+import { improveText } from '../services/groqService';
 
 function Formulario() {
   const navigate = useNavigate();
@@ -42,35 +42,21 @@ function Formulario() {
 
   const next = async (newData) => {
     const updated = { template: 'tech', iaFormalizacaoAtiva: true, ...data, ...newData };
+    setData(updated);
 
-    // CORREÇÃO: Não pula direto para o Preview!
-    // Pergunta ao usuário se ele quer usar a IA no site que ele já tem.
     if (newData.existingSite) {
       setUid(newData.uid);
-
-      const querEditar = window.confirm(
-        "Você já tem um portfólio salvo!\n\nDeseja revisá-lo passo a passo e gerar novos textos com a Inteligência Artificial?\n\n(Clique em 'OK' para usar a IA ou 'Cancelar' para ir direto ao seu site)"
-      );
-
-      if (querEditar) {
-        // Preenche o formulário com o site antigo e vai para o próximo passo
-        setData({ ...updated, ...newData.existingSite });
-        setStep(step + 1);
-      } else {
-        // Vai direto para o Preview (sem IA nova)
-        navigate('/preview', {
-          state: {
-            data: { template: 'tech', ...newData.existingSite },
-            uid: newData.uid,
-            isNewCreation: false,
-            isPublicView: false
-          }
-        });
-      }
+      navigate('/preview', {
+        state: {
+          data: { template: 'tech', ...newData.existingSite },
+          uid: newData.uid,
+          isNewCreation: newData.isNewCreation || false,
+          isPublicView: false
+        }
+      });
       return;
     }
 
-    setData(updated);
     if (newData.uid) {
       setUid(newData.uid);
     }
@@ -79,52 +65,26 @@ function Formulario() {
       setLoading(true);
 
       const improved = { ...updated };
-      let aiWarning = '';
 
-      try {
-        if (improved.iaFormalizacaoAtiva !== false) {
-          if (!isGroqConfigured()) {
-            throw new Error(
-              'A chave da IA não foi configurada. No Render, adicione VITE_GROQ_API_KEY nas Environment Variables e faça um novo deploy.'
-            );
-          }
-
-          if (improved.descricao?.length > 10) {
-            improved.descricao = await improveText(
-              improved.descricao,
-              'descrição profissional'
-            );
-          }
-
-          if (improved.sobre?.length > 10) {
-            improved.sobre = await improveText(
-              improved.sobre,
-              'apresentação pessoal'
-            );
-          }
-
-          if (improved.experiencias?.length > 0) {
-            improved.experiencias = await Promise.all(
-              improved.experiencias.map(async (exp) => {
-                if (exp.descricao?.length > 10) {
-                  return {
-                    ...exp,
-                    descricao: await improveText(
-                      exp.descricao,
-                      'experiência profissional'
-                    )
-                  };
-                }
-                return exp;
-              })
-            );
-          }
+      // Só chama a IA se o usuário não tiver desativado a formalização
+      // na etapa "Escolha seu template".
+      if (improved.iaFormalizacaoAtiva !== false) {
+        if (improved.descricao?.length > 10) {
+          improved.descricao = await improveText(improved.descricao, 'descrição profissional');
         }
-      } catch (error) {
-        console.error('Erro ao usar a IA:', error);
-        aiWarning = error?.message || 'Não foi possível se conectar à IA no momento.';
-      } finally {
-        setLoading(false);
+        if (improved.sobre?.length > 10) {
+          improved.sobre = await improveText(improved.sobre, 'apresentação pessoal');
+        }
+        if (improved.experiencias?.length > 0) {
+          improved.experiencias = await Promise.all(
+            improved.experiencias.map(async (exp) => {
+              if (exp.descricao?.length > 10) {
+                return { ...exp, descricao: await improveText(exp.descricao, 'experiência profissional') };
+              }
+              return exp;
+            })
+          );
+        }
       }
 
       navigate('/preview', {
@@ -132,8 +92,7 @@ function Formulario() {
           data: improved,
           uid: uid || newData.uid,
           fromLocalStorage: false,
-          isNewCreation: true,
-          aiWarning // Enviando o aviso para o Preview!
+          isNewCreation: false
         }
       });
     } else {
