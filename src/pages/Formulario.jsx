@@ -42,21 +42,35 @@ function Formulario() {
 
   const next = async (newData) => {
     const updated = { template: 'tech', iaFormalizacaoAtiva: true, ...data, ...newData };
-    setData(updated);
 
+    // CORREÇÃO: Não pula direto para o Preview!
+    // Pergunta ao usuário se ele quer usar a IA no site que ele já tem.
     if (newData.existingSite) {
       setUid(newData.uid);
-      navigate('/preview', {
-        state: {
-          data: { template: 'tech', ...newData.existingSite },
-          uid: newData.uid,
-          isNewCreation: newData.isNewCreation || false,
-          isPublicView: false
-        }
-      });
+
+      const querEditar = window.confirm(
+        "Você já tem um portfólio salvo!\n\nDeseja revisá-lo passo a passo e gerar novos textos com a Inteligência Artificial?\n\n(Clique em 'OK' para usar a IA ou 'Cancelar' para ir direto ao seu site)"
+      );
+
+      if (querEditar) {
+        // Preenche o formulário com o site antigo e vai para o próximo passo
+        setData({ ...updated, ...newData.existingSite });
+        setStep(step + 1);
+      } else {
+        // Vai direto para o Preview (sem IA nova)
+        navigate('/preview', {
+          state: {
+            data: { template: 'tech', ...newData.existingSite },
+            uid: newData.uid,
+            isNewCreation: false,
+            isPublicView: false
+          }
+        });
+      }
       return;
     }
 
+    setData(updated);
     if (newData.uid) {
       setUid(newData.uid);
     }
@@ -68,7 +82,6 @@ function Formulario() {
       let aiWarning = '';
 
       try {
-        // A IA é opcional: se estiver desativada, o texto original é preservado.
         if (improved.iaFormalizacaoAtiva !== false) {
           if (!isGroqConfigured()) {
             throw new Error(
@@ -109,7 +122,7 @@ function Formulario() {
         }
       } catch (error) {
         console.error('Erro ao usar a IA:', error);
-        aiWarning = error?.message || 'Não foi possível usar a IA.';
+        aiWarning = error?.message || 'Não foi possível se conectar à IA no momento.';
       } finally {
         setLoading(false);
       }
@@ -120,7 +133,7 @@ function Formulario() {
           uid: uid || newData.uid,
           fromLocalStorage: false,
           isNewCreation: true,
-          aiWarning
+          aiWarning // Enviando o aviso para o Preview!
         }
       });
     } else {
