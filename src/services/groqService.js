@@ -18,17 +18,33 @@ export async function improveText(text, context) {
       if (modelsData && modelsData.data && modelsData.data.length > 0) {
         const modelIds = modelsData.data.map(m => m.id);
         
-        // Ordem de preferência focada em modelos mais rápidos e que consomem menos tokens
-        const preferred = [
-          'gemma2-9b-it',
-          'llama-3.1-8b-instant',
-          'mixtral-8x7b-32768',
-          'llama-3.2-3b-preview',
-          'llama-3.3-70b-versatile'
+        // Lista de palavras-chave para encontrar bons modelos (mesmo se tiverem prefixos)
+        const preferredKeywords = [
+          'gemma2-9b',
+          'llama-3.1-8b',
+          'llama3-8b',
+          'mixtral-8x7b',
+          'llama-3.3-70b'
         ];
         
-        selectedModel = preferred.find(id => modelIds.includes(id)) || modelIds[0];
-        console.log('Modelo selecionado dinamicamente pelo Groq:', selectedModel);
+        // Filtra para remover modelos de classificação e guardrails (que dão erro no formato de chat)
+        const validModels = modelIds.filter(id => 
+          !id.toLowerCase().includes('guard') &&
+          !id.toLowerCase().includes('safeguard') &&
+          !id.toLowerCase().includes('whisper') &&
+          !id.toLowerCase().includes('vision') &&
+          !id.toLowerCase().includes('embed')
+        );
+
+        // Tenta achar um modelo que contenha alguma das palavras-chave preferidas
+        selectedModel = validModels.find(id => preferredKeywords.some(keyword => id.toLowerCase().includes(keyword)));
+        
+        // Se ainda não achar, pega o primeiro modelo válido de chat
+        if (!selectedModel) {
+          selectedModel = validModels[0] || modelIds[0];
+        }
+        
+        console.log('Modelo de chat selecionado dinamicamente pelo Groq:', selectedModel);
       }
     }
 
