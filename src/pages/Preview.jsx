@@ -645,4 +645,7 @@ function Preview() {
         </div>
       </div>
     </div>
-  )
+  );
+}
+
+export default Preview;
